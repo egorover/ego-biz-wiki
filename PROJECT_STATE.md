@@ -2,7 +2,7 @@
 
 ## Текущий Commit
 
-**Commit #01 — Project Foundation**
+## Commit #01 — Project Foundation
 
 Статус: **РЕАЛИЗОВАН — локальная проверка пройдена, ожидается Git commit**
 

@@ -1,14 +1,14 @@
 # EgoBiz Wiki
 
-### AI Business Knowledge Assistant
+## AI Business Knowledge Assistant
 
 EgoBiz Wiki — компактный RAG-ассистент для ответов на вопросы сотрудников на основе контролируемой корпоративной базы знаний.
 
 ## Текущий статус
 
-**Level 4 — Development**
+## Level 4 — Development
 
-**Commit #01 — Project Foundation**
+## Commit #01 — Project Foundation
 
 На данном этапе проект содержит работоспособный фундамент приложения и эндпоинт `/health`. RAG, индексация базы знаний, интеграция с LLM, поиск релевантной информации и Streamlit UI будут реализованы на последующих этапах.
 
