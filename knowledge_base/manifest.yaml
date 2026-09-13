@@ -1,0 +1,232 @@
+version: "1.0"
+documents:
+  - document_id: hr-vacation-policy
+    path: hr/vacation_policy.md
+    title: Политика отпусков
+    category: hr
+    subcategory: leave
+    source: HR / Политика отпусков
+    version: "1.0"
+    language: ru
+    access_level: internal
+    updated_at: "2026-09-01"
+  - document_id: hr-sick-leave
+    path: hr/sick_leave.md
+    title: Больничный и временная нетрудоспособность
+    category: hr
+    subcategory: leave
+    source: HR / Больничный
+    version: "1.0"
+    language: ru
+    access_level: internal
+    updated_at: "2026-09-01"
+  - document_id: hr-work-schedule
+    path: hr/work_schedule.md
+    title: Рабочий график
+    category: hr
+    subcategory: schedule
+    source: HR / Рабочий график
+    version: "1.0"
+    language: ru
+    access_level: internal
+    updated_at: "2026-09-01"
+  - document_id: hr-onboarding
+    path: hr/onboarding.md
+    title: Онбординг новых сотрудников
+    category: hr
+    subcategory: onboarding
+    source: HR / Онбординг
+    version: "1.0"
+    language: ru
+    access_level: internal
+    updated_at: "2026-09-01"
+  - document_id: hr-remote-work
+    path: hr/remote_work.md
+    title: Удалённая работа
+    category: hr
+    subcategory: remote_work
+    source: HR / Удалённая работа
+    version: "1.0"
+    language: ru
+    access_level: internal
+    updated_at: "2026-09-01"
+  - document_id: it-vpn
+    path: it/vpn.md
+    title: Подключение к корпоративному VPN
+    category: it
+    subcategory: remote_access
+    source: IT / Корпоративный VPN
+    version: "1.0"
+    language: ru
+    access_level: internal
+    updated_at: "2026-09-01"
+  - document_id: it-corporate-email
+    path: it/corporate_email.md
+    title: Корпоративная почта
+    category: it
+    subcategory: email
+    source: IT / Корпоративная почта
+    version: "1.0"
+    language: ru
+    access_level: internal
+    updated_at: "2026-09-01"
+  - document_id: it-password-reset
+    path: it/password_reset.md
+    title: Сброс корпоративного пароля
+    category: it
+    subcategory: accounts
+    source: IT / Сброс пароля
+    version: "1.0"
+    language: ru
+    access_level: internal
+    updated_at: "2026-09-01"
+  - document_id: it-access-requests
+    path: it/access_requests.md
+    title: Запрос доступа к корпоративным системам
+    category: it
+    subcategory: access
+    source: IT / Запросы доступа
+    version: "1.0"
+    language: ru
+    access_level: internal
+    updated_at: "2026-09-01"
+  - document_id: it-corporate-laptop
+    path: it/corporate_laptop.md
+    title: Корпоративный ноутбук
+    category: it
+    subcategory: equipment
+    source: IT / Корпоративный ноутбук
+    version: "1.0"
+    language: ru
+    access_level: internal
+    updated_at: "2026-09-01"
+  - document_id: security-incident-reporting
+    path: security/incident_reporting.md
+    title: Сообщение об инциденте безопасности
+    category: security
+    subcategory: incidents
+    source: Security / Сообщение об инциденте
+    version: "1.0"
+    language: ru
+    access_level: internal
+    updated_at: "2026-09-01"
+  - document_id: security-phishing
+    path: security/phishing.md
+    title: Фишинг и подозрительные сообщения
+    category: security
+    subcategory: phishing
+    source: Security / Фишинг
+    version: "1.0"
+    language: ru
+    access_level: internal
+    updated_at: "2026-09-01"
+  - document_id: security-password-policy
+    path: security/password_policy.md
+    title: Политика паролей
+    category: security
+    subcategory: credentials
+    source: Security / Политика паролей
+    version: "1.0"
+    language: ru
+    access_level: internal
+    updated_at: "2026-09-01"
+  - document_id: security-access-control
+    path: security/access_control.md
+    title: Контроль доступа
+    category: security
+    subcategory: access
+    source: Security / Контроль доступа
+    version: "1.0"
+    language: ru
+    access_level: internal
+    updated_at: "2026-09-01"
+  - document_id: operations-office-access
+    path: operations/office_access.md
+    title: Доступ в офис
+    category: operations
+    subcategory: office
+    source: Operations / Доступ в офис
+    version: "1.0"
+    language: ru
+    access_level: internal
+    updated_at: "2026-09-01"
+  - document_id: operations-equipment
+    path: operations/equipment.md
+    title: Оборудование и рабочее место
+    category: operations
+    subcategory: equipment
+    source: Operations / Оборудование
+    version: "1.0"
+    language: ru
+    access_level: internal
+    updated_at: "2026-09-01"
+  - document_id: operations-procurement
+    path: operations/procurement.md
+    title: Закупка оборудования и услуг
+    category: operations
+    subcategory: procurement
+    source: Operations / Закупки
+    version: "1.0"
+    language: ru
+    access_level: internal
+    updated_at: "2026-09-01"
+  - document_id: operations-business-travel
+    path: operations/business_travel.md
+    title: Командировки
+    category: operations
+    subcategory: travel
+    source: Operations / Командировки
+    version: "1.0"
+    language: ru
+    access_level: internal
+    updated_at: "2026-09-01"
+  - document_id: customer-operations-sla
+    path: customer_operations/sla.md
+    title: SLA для клиентских обращений
+    category: customer_operations
+    subcategory: sla
+    source: Customer Operations / SLA
+    version: "1.0"
+    language: ru
+    access_level: internal
+    updated_at: "2026-09-01"
+  - document_id: customer-operations-escalation
+    path: customer_operations/escalation.md
+    title: Эскалация клиентских обращений
+    category: customer_operations
+    subcategory: escalation
+    source: Customer Operations / Эскалация
+    version: "1.0"
+    language: ru
+    access_level: internal
+    updated_at: "2026-09-01"
+  - document_id: customer-operations-incident-handling
+    path: customer_operations/incident_handling.md
+    title: Обработка клиентских инцидентов
+    category: customer_operations
+    subcategory: incidents
+    source: Customer Operations / Инциденты
+    version: "1.0"
+    language: ru
+    access_level: internal
+    updated_at: "2026-09-01"
+  - document_id: customer-operations-communication
+    path: customer_operations/customer_communication.md
+    title: Коммуникация с клиентом
+    category: customer_operations
+    subcategory: communication
+    source: Customer Operations / Коммуникация
+    version: "1.0"
+    language: ru
+    access_level: internal
+    updated_at: "2026-09-01"
+  - document_id: faq-general
+    path: faq/general_faq.md
+    title: Общий FAQ
+    category: faq
+    subcategory: general
+    source: FAQ / Общие вопросы
+    version: "1.0"
+    language: ru
+    access_level: internal
+    updated_at: "2026-09-01"

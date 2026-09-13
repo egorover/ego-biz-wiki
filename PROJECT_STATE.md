@@ -2,39 +2,46 @@
 
 ## Текущий Commit
 
-## Commit #01 — Project Foundation
+**Commit #02 — Knowledge Base**
 
-Статус: **РЕАЛИЗОВАН — локальная проверка пройдена, ожидается Git commit**
+Статус: **РЕАЛИЗОВАН — ожидает локальной проверки и Git commit**
 
-## Реализованные возможности
+## Реализовано
 
-- Конфигурация проекта на Python 3.12+.
-- Слой конфигурации на основе Pydantic Settings.
-- `.env.example` и безопасный `.gitignore` без секретов.
-- Фабрика FastAPI-приложения.
-- Базовая настройка логирования.
-- Эндпоинт `GET /health`.
-- Схема ответа health-check со строгим запретом дополнительных полей.
-- Unit/API-тесты для настроек и health endpoint.
-- Базовая документация по локальной настройке проекта.
+- Стандартизированная демонстрационная Knowledge Base для EgoTech Solutions.
+- 6 предметных областей: HR, IT, Security, Operations, Customer Operations, FAQ.
+- 23 Markdown-документа с русскоязычным бизнес-контентом.
+- Единое техническое именование файлов и директорий: English `snake_case`.
+- Единая metadata strategy в `knowledge_base/manifest.yaml`.
+- Стабильные `document_id` и однозначная связь metadata с файлами.
+- Source strategy для будущих citations.
+- Документы подготовлены для последующего chunking/indexing.
+- Dataset содержит основу для simple lookup, instruction lookup, cross-document, ambiguous и out-of-KB сценариев.
+- Добавлена документация `docs/KNOWLEDGE_BASE.md`.
+- Добавлены автоматические проверки структуры manifest и Markdown dataset.
 
-## Структура репозитория
+## Важное архитектурное решение
 
-```text
-ego-biz-wiki/
+MVP использует сознательно стандартизированный «идеальный документооборот»: Markdown, English `snake_case` для технических имён, русский бизнес-контент, единый manifest и единая metadata strategy.
 
-├── app/
-│   ├── api/
-│   │   ├── routes/health.py
-│   │   └── schemas/health.py
-│   ├── application/
-│   ├── domain/
-│   ├── infrastructure/config/settings.py
-│   └── main.py
-├── tests/unit/
-├── docs/SETUP.md
-├── .env.example
-├── .gitignore
-├── pyproject.toml
-├── README.md
-└── PROJECT_STATE.md
+Это внутренний нормализованный формат MVP, а не утверждение о том, что реальная корпоративная документация всегда организована так же.
+
+**Document Standardization** вынесена в Roadmap как отдельная будущая feature для обработки разнородных PDF/DOCX/XLSX/HTML/TXT и приведения их к единому внутреннему представлению.
+
+## Проверки
+
+- Manifest parsing и metadata validation.
+- Уникальность `document_id`.
+- Уникальность путей.
+- Наличие всех файлов, зарегистрированных в manifest.
+- Отсутствие пустых/placeholder-документов.
+
+## Ограничения
+
+В Commit #02 НЕ реализованы embeddings, ChromaDB, indexing pipeline, retrieval, RAG, LLM integration, API `/chat`, Streamlit и автоматическая стандартизация документов.
+
+## Следующий Commit
+
+**Commit #03 — Indexing**
+
+Следующий этап должен загрузить стандартизированные документы, выполнить chunking, создать embeddings и подготовить ChromaDB index.

@@ -1,8 +1,8 @@
-# Local Setup
+# Локальная настройка
 
-## Requirements
+## Требования
 
-Python 3.12 or newer within the supported Python 3.x range.
+Python 3.12 или новее в поддерживаемом диапазоне Python 3.x.
 
 ## Windows PowerShell
 
@@ -14,20 +14,20 @@ python -m pip install -e ".[test]"
 Copy-Item .env.example .env
 ```
 
-## Start
+## Запуск
 
 ```powershell
 python -m uvicorn app.main:app --reload
 ```
 
-## Verify
+## Проверка
 
 ```powershell
 Invoke-RestMethod http://127.0.0.1:8000/health
 python -m pytest
 ```
 
-Expected health response:
+Ожидаемый ответ health-check:
 
 ```json
 {
@@ -36,3 +36,7 @@ Expected health response:
   "version": "0.1.0"
 }
 ```
+
+## Knowledge Base
+
+Демонстрационная база знаний находится в `knowledge_base/`. Её структура и правила подготовки документов описаны в `docs/KNOWLEDGE_BASE.md`.
