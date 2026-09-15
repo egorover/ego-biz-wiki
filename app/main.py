@@ -4,6 +4,7 @@ import logging
 
 from fastapi import FastAPI
 
+from app.api.routes.chat import router as chat_router
 from app.api.routes.health import router as health_router
 from app.infrastructure.config.settings import get_settings
 
@@ -27,6 +28,7 @@ def create_app() -> FastAPI:
         description="AI Business Knowledge Assistant",
     )
     application.include_router(health_router)
+    application.include_router(chat_router)
     return application
 
 

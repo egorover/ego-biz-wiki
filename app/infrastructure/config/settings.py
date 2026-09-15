@@ -25,6 +25,7 @@ class Settings(BaseSettings):
     openai_api_key: SecretStr = Field(default=SecretStr(""))
     openai_base_url: str | None = Field(default=None)
     embedding_model: str = Field(default="text-embedding-3-small")
+    chat_model: str = Field(default="gpt-4o-mini")
     embedding_batch_size: int = Field(default=100, ge=1)
 
     knowledge_base_path: Path = Field(default=Path("knowledge_base"))

@@ -2,52 +2,89 @@
 
 ## Текущий Commit
 
-**Commit #04 — Retrieval**
+**Commit #05 — RAG Pipeline**
 
-Статус: **РЕАЛИЗОВАН — ПРОТЕСТИРОВАН — ОПУБЛИКОВАН**
+Статус: **РЕАЛИЗОВАН — ПРОТЕСТИРОВАН — ГОТОВ К COMMIT**
 
 ## Реализовано
 
-### Knowledge Base и Indexing
+### Knowledge Base
 
-* Сохранён и подтверждён нормализованный формат Knowledge Base из Commit #02.
-* Реализован indexing pipeline для корпоративной Knowledge Base.
-* Добавлена загрузка документов через `knowledge_base/manifest.yaml`.
-* Реализована передача document metadata в индекс.
+* Сохранён нормализованный формат Knowledge Base из Commit #02.
+* Используется демонстрационная корпоративная база знаний EgoTech Solutions.
+* Knowledge Base содержит 23 Markdown-документа.
+* Используется единый `manifest.yaml`.
+* Используется единая metadata strategy.
+
+### Indexing
+
+* Реализован indexing pipeline.
+* Реализована загрузка документов через `knowledge_base/manifest.yaml`.
 * Реализован token-aware chunking.
-* Начальные параметры chunking: `chunk_size=800`, `chunk_overlap=120`.
+* Начальные параметры:
+
+  * `chunk_size=800`
+  * `chunk_overlap=120`
 * Реализована генерация embeddings через OpenAI-compatible API.
-* Поддерживается работа через ProxyAPI с использованием `OPENAI_BASE_URL`.
+* Поддерживается ProxyAPI через `OPENAI_BASE_URL`.
 * Реализовано persistent storage в ChromaDB.
 * Используется коллекция `ego_biz_wiki`.
-* Реализованы детерминированные `chunk_id` в формате `{document_id}:{chunk_index}`.
-* Реализован повторный indexing через обновление существующих IDs без создания дубликатов.
-* Добавлен CLI entrypoint `scripts/index_knowledge_base.py`.
+* Используются детерминированные `chunk_id`.
+* Повторный indexing выполняется через upsert.
 * Добавлена документация `docs/INDEXING.md`.
 
 ### Retrieval
 
-* Реализована semantic retrieval subsystem поверх существующего ChromaDB index.
+* Реализована semantic retrieval subsystem.
 * Добавлена domain-модель `RetrievedChunk`.
 * Добавлен application service `RetrievalService`.
-* Application layer работает через `QueryEmbeddingProvider` и `RetrievalVectorStore` Protocols.
-* Реализована генерация query embedding через тот же embedding provider, который используется при indexing.
-* Добавлен метод `embed_query()` в `OpenAIEmbeddingProvider`.
-* Реализован similarity search через native ChromaDB API.
+* Application layer использует:
+
+  * `QueryEmbeddingProvider`
+  * `RetrievalVectorStore`
+* Реализован query embedding.
+* Реализован ChromaDB similarity search.
 * Реализован configurable `top_k`.
-* Значение `RETRIEVAL_TOP_K` по умолчанию: `5`.
-* Добавлен опциональный `RETRIEVAL_SCORE_THRESHOLD`.
-* Threshold применяется как максимальный Chroma distance: меньшее расстояние означает более близкий результат.
-* Результаты сортируются от наиболее близкого к наиболее далёкому.
-* Сохраняются `content`, `metadata`, `source`, `document_id`, `chunk_id` и `distance`.
-* Пустая ChromaDB collection корректно возвращает пустой результат.
-* Реализована валидация пустого query, `top_k` и threshold.
-* Добавлены unit и integration tests для Retrieval subsystem.
+* Реализован configurable distance threshold.
+* Результаты сортируются по distance.
+* Реализовано сохранение metadata, source, document_id, chunk_id и distance.
+* Реализована обработка пустой ChromaDB collection.
+* Реализована валидация query, `top_k` и threshold.
 * Добавлена документация `docs/RETRIEVAL.md`.
 
-## Архитектура Commit #04
+### RAG
 
-Текущий pipeline Retrieval:
+* Добавлена domain-модель `RAGResponse`.
+* Добавлена domain-модель `RAGSource`.
+* Реализован application service `RAGService`.
+* Retrieval подключён к RAG application flow.
+* Реализована передача retrieved chunks в LLM context.
+* Реализована генерация grounded answer через LLM.
+* Реализован фиксированный fallback при отсутствии релевантного контекста.
+* При отсутствии context LLM не вызывается.
+* Реализовано формирование уникального списка источников.
+* Application layer не зависит от конкретного LLM provider.
+
+### LLM
+
+* Добавлен `RAGLLMProvider` Protocol.
+* Добавлен `OpenAILLMProvider`.
+* Используется `ChatOpenAI` через OpenAI-compatible API.
+* Добавлена конфигурация `CHAT_MODEL`.
+* По умолчанию используется `gpt-4o-mini`.
+* System prompt требует отвечать только на основании предоставленного context.
+* System prompt запрещает использование внешних знаний и выдумывание фактов.
+* Ответы генерируются на русском языке.
+
+### API
+
+* Сохранён `GET /health`.
+* Добавлен `POST /chat`.
+* Добавлены `ChatRequest`, `ChatResponse` и `ChatSource`.
+* Добавлена dependency injection через `get_rag_service`.
+* FastAPI route не содержит инфраструктурной логики.
+
+## Текущий RAG pipeline
 
 ```text
 User Query
@@ -56,14 +93,119 @@ Query Embedding
 ↓
 ChromaDB Similarity Search
 ↓
-Top-K Results
+Top-K
 ↓
-Optional Distance Threshold
+Distance Threshold
 ↓
-Sorted Retrieved Chunks
+Retrieved Context
+↓
+LLM
+↓
+Answer + Sources
 ```
 
-Архитектура приложения:
+## Конфигурация Retrieval
+
+Текущие параметры:
+
+```text
+RETRIEVAL_TOP_K=5
+RETRIEVAL_SCORE_THRESHOLD=1.30
+```
+
+Threshold `1.30` выбран на основании реального smoke test текущей Knowledge Base.
+
+Измеренные значения:
+
+```text
+Relevant:
+0.6799
+1.0037
+1.0832
+1.1158
+1.2040
+
+Irrelevant:
+1.4995
+1.6523
+1.6688
+1.6930
+1.7101
+```
+
+Таким образом, для текущей демонстрационной Knowledge Base threshold `1.30` сохраняет релевантные результаты и отбрасывает результаты явно нерелевантного запроса.
+
+Важно: threshold является эмпирической конфигурацией текущего MVP, а не универсальным значением для любых embedding models или корпусов.
+
+## Fallback
+
+Точный fallback:
+
+```text
+В базе знаний не найдено достаточно информации для достоверного ответа на этот вопрос.
+```
+
+При отсутствии retrieved chunks:
+
+```text
+answer = fallback
+sources = []
+```
+
+LLM при этом не вызывается.
+
+## Проверки
+
+### Full test suite
+
+**41 passed, 1 warning**
+
+Warning:
+
+`Starlette / AnyIO DeprecationWarning`
+
+Предупреждение относится к внешней зависимости и не связано с логикой проекта.
+
+### Real end-to-end smoke tests
+
+Проверены:
+
+```text
+Как оформить отпуск?
+Как подключиться к VPN?
+Что делать при фишинговом письме?
+Как заказать домик на Марсе?
+```
+
+Первые три запроса вернули grounded answers и релевантные Knowledge Base sources.
+
+Запрос:
+
+```text
+Как заказать домик на Марсе?
+```
+
+вернул:
+
+```text
+В базе знаний не найдено достаточно информации для достоверного ответа на этот вопрос.
+```
+
+и:
+
+```json
+"sources": []
+```
+
+Таким образом, end-to-end flow работает через:
+
+```text
+FastAPI → RAGService → RetrievalService → ChromaDB → LLM
+```
+
+## Архитектурные решения
+
+Архитектура:
 
 ```text
 Domain
@@ -71,70 +213,37 @@ Domain
 Application
 ↓
 Infrastructure
+↓
+API
 ```
 
-`RetrievalService` не зависит от конкретной реализации ChromaDB или embedding provider.
+Application layer использует Protocols и не зависит от конкретных инфраструктурных реализаций.
 
-Application layer использует Protocols:
+MVP сознательно не использует:
 
-* `QueryEmbeddingProvider`
-* `RetrievalVectorStore`
+* Agentic RAG;
+* LangGraph;
+* hybrid search;
+* reranking;
+* external web search;
+* long-term memory;
+* multi-agent orchestration.
 
-Конкретные инфраструктурные реализации находятся в:
+## Knowledge Base — важное решение
 
-* `app/infrastructure/embeddings/openai.py`
-* `app/infrastructure/vector_store/chroma.py`
+MVP использует сознательно стандартизированный **«идеальный документооборот»**:
 
-ChromaDB используется непосредственно через `chromadb`.
+* Markdown;
+* единые технические имена;
+* русский бизнес-контент;
+* единый manifest;
+* единая metadata strategy.
 
-Отдельный пакет `langchain-chroma` не используется.
+Это нормализованный внутренний формат демонстрационного MVP, а не утверждение о том, что реальные корпоративные документы всегда организованы таким образом.
 
-## Проверки
+**Document Standardization** вынесена в Roadmap как будущая feature для обработки разнородных PDF/DOCX/XLSX/HTML/TXT и приведения их к единому внутреннему представлению.
 
-### Tests
-
-Unit tests Retrieval:
-
-**10 passed**
-
-Integration tests Retrieval:
-
-**2 passed**
-
-Полный test suite проекта:
-
-**28 passed, 1 warning**
-
-Предупреждение относится к совместимости `Starlette` / `AnyIO` и не связано с логикой Commit #04.
-
-### Compilation
-
-Проверена компиляция изменённых Python-модулей через `compileall`.
-
-Ошибок компиляции нет.
-
-### Real Retrieval Smoke Test
-
-Выполнен реальный smoke test с существующим ChromaDB index и реальным embedding provider через ProxyAPI.
-
-Проверены запросы:
-
-* `Как оформить отпуск?`
-* `Как подключиться к VPN?`
-* `Что делать при фишинговом письме?`
-* `Как заказать домик на Марсе?`
-
-Для первых трёх запросов возвращены релевантные документы Knowledge Base:
-
-* HR / Политика отпусков
-* IT / Корпоративный VPN
-* Security / Фишинг
-
-Для out-of-KB запроса про домик на Марсе релевантного документа не найдено; результаты имеют существенно большие distance.
-
-Таким образом, базовый semantic retrieval работает на реальном индексе.
-
-### Security
+## Security
 
 Проверено:
 
@@ -145,134 +254,82 @@ git check-ignore .env
 
 Локальный `.env` не отслеживается Git.
 
-Секреты не должны включаться в Git или logging.
+API keys не должны попадать в Git или logging.
 
-## Конфигурация Retrieval
+## Что осталось вне текущего MVP
 
-В `.env.example` добавлены:
+Не реализованы:
 
-```text
-RETRIEVAL_TOP_K=5
-RETRIEVAL_SCORE_THRESHOLD=
-```
+* `POST /search`;
+* Streamlit UI;
+* formal evaluation dataset;
+* Document Standardization;
+* Agentic RAG;
+* hybrid search;
+* reranking;
+* external web search;
+* long-term memory.
 
-`RETRIEVAL_SCORE_THRESHOLD` по умолчанию не задан.
+## Следующий этап
 
-Это позволяет на текущем этапе использовать top-K retrieval без обязательного threshold и дополнительно настраивать порог после evaluation.
+Следующий рабочий этап — **Commit #06**.
 
-## Важные архитектурные решения
+Предварительно необходимо определить его минимальную границу и не начинать реализацию до подтверждения плана.
 
-MVP использует сознательно стандартизированный «идеальный документооборот»: Markdown, English `snake_case` для технических имён, русский бизнес-контент, единый manifest и единая metadata strategy.
+Приоритетные следующие компоненты:
 
-Это внутренний нормализованный формат MVP, а не утверждение о том, что реальная корпоративная документация всегда организована так же.
+1. `POST /search`;
+2. Streamlit UI;
+3. evaluation dataset.
 
-**Document Standardization** вынесена в Roadmap как отдельная будущая feature для обработки разнородных PDF/DOCX/XLSX/HTML/TXT и приведения их к единому внутреннему представлению.
-
-Основной принцип разработки:
+При выборе следующего этапа сохраняется принцип:
 
 **SIMPLE, COMPLETE & WORKING MVP > COMPLEX, UNSTABLE PRODUCT**
 
-Поэтому Commit #04 реализует только необходимый semantic retrieval и не добавляет преждевременную архитектурную сложность.
-
-## Что сознательно НЕ реализовано
-
-В Commit #04 не реализованы:
-
-* RAG pipeline
-* LLM answer generation
-* Agentic RAG
-* LangGraph
-* hybrid search
-* reranking
-* external web search
-* long-term memory
-* API `/chat`
-* API `/search`
-* Streamlit integration
-
-Эти компоненты будут рассматриваться только на соответствующих следующих этапах MVP.
-
-## Ограничения
-
-Retrieval использует distance, возвращаемый ChromaDB.
-
-`RETRIEVAL_SCORE_THRESHOLD` является максимальным допустимым distance, а не нормализованным similarity score.
-
-Текущее значение `RETRIEVAL_TOP_K=5` является стартовой конфигурацией и должно быть дополнительно проверено на этапе evaluation.
-
-Качество retrieval оценивается по фактической релевантности результатов и будет дополнительно проверено на evaluation dataset.
-
-## Следующий Commit
-
-**Следующий этап — RAG pipeline.**
-
-Он должен использовать реализованный Retrieval как источник контекста для генерации ответа через LLM.
-
-При этом должны сохраняться:
-
-* ответ только на основании найденного контекста;
-* источники ответа;
-* fallback при недостаточном контексте;
-* отсутствие внешнего web search в MVP.
-
 ## Git State
 
-Последние созданные и отправленные в remote commits:
+Перед завершением Commit #05 необходимо проверить:
 
 ```text
-52e943a docs: update README for retrieval
-263c209 feat: implement retrieval
+git status
+git log
+git remote
 ```
 
-Текущий HEAD:
+После commit:
 
-```text
-52e943a (HEAD -> main, origin/main) docs: update README for retrieval
-```
-
-Remote `origin/main` синхронизирован с локальной `main`.
-
-Рабочее дерево чистое.
+* local `main` должен быть синхронизирован с `origin/main`;
+* рабочее дерево должно быть чистым.
 
 ## Backup
 
-После завершения Commit #04 создан backup текущего состояния проекта:
+После завершения Commit #05 необходимо создать backup без:
+
+```text
+.git
+.venv
+__pycache__
+.pytest_cache
+```
+
+Предыдущий backup:
 
 ```text
 C:\Users\alexe\Desktop\ego-biz-wiki-backup-commit04
 ```
 
-Backup создан без `.git`, `.venv`, `__pycache__` и `.pytest_cache`.
+## Завершение Commit #05
 
-## Завершение Commit #04
+До финального commit необходимо:
 
-Commit #04 полностью завершён:
-
-* implementation выполнен;
-* unit и integration tests пройдены;
-* полный test suite: **28 passed**;
-* real retrieval smoke test выполнен;
-* `git diff --cached --check` чистый;
-* Git commit создан;
-* README обновлён;
-* оба commit опубликованы в `origin/main`;
-* рабочее дерево чистое;
-* backup создан.
-
-## Следующий рабочий шаг
-
-Подготовить **Commit #05 — RAG pipeline**.
-
-Перед началом разработки следующего этапа необходимо:
-
-1. Использовать текущий `PROJECT_STATE.md` как точку передачи контекста.
-2. Зафиксировать границы MVP для RAG pipeline.
-3. Определить минимальный application flow:
-   `User Query → Retrieval → Context → LLM → Answer + Sources`.
-4. Сохранить fallback при недостаточном контексте.
-5. Не добавлять Agentic RAG, LangGraph, hybrid search, reranking или external web search.
-6. Подготовить технический план и тесты до начала реализации.
-
-Главный принцип:
-
-**SIMPLE, COMPLETE & WORKING MVP > COMPLEX, UNSTABLE PRODUCT**
+1. Обновить README.
+2. Обновить PROJECT_STATE.
+3. Проверить полный test suite.
+4. Проверить `git diff --check`.
+5. Проверить staged diff.
+6. Создать Git commit.
+7. Push в `origin/main`.
+8. Проверить GitHub synchronization.
+9. Проверить чистое рабочее дерево.
+10. Создать backup.
+11. Подготовить Transfer Prompt для следующего чата.
