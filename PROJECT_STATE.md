@@ -4,7 +4,7 @@
 
 **Commit #04 — Retrieval**
 
-Статус: **РЕАЛИЗОВАН — ожидает Git commit**
+Статус: **РЕАЛИЗОВАН — ПРОТЕСТИРОВАН — ОПУБЛИКОВАН**
 
 ## Реализовано
 
@@ -217,34 +217,61 @@ Retrieval использует distance, возвращаемый ChromaDB.
 
 ## Git State
 
-Последний созданный и отправленный в remote commit:
+Последние созданные и отправленные в remote commits:
 
-`b627e32 docs: update README for commit 03`
+```text
+52e943a docs: update README for retrieval
+263c209 feat: implement retrieval
+```
 
-Текущий Commit #04:
+Текущий HEAD:
 
-**ещё не создан.**
+```text
+52e943a (HEAD -> main, origin/main) docs: update README for retrieval
+```
 
-После завершения проверки Commit #04 должен быть создан отдельным Git commit.
+Remote `origin/main` синхронизирован с локальной `main`.
+
+Рабочее дерево чистое.
+
+## Backup
+
+После завершения Commit #04 создан backup текущего состояния проекта:
+
+```text
+C:\Users\alexe\Desktop\ego-biz-wiki-backup-commit04
+```
+
+Backup создан без `.git`, `.venv`, `__pycache__` и `.pytest_cache`.
+
+## Завершение Commit #04
+
+Commit #04 полностью завершён:
+
+* implementation выполнен;
+* unit и integration tests пройдены;
+* полный test suite: **28 passed**;
+* real retrieval smoke test выполнен;
+* `git diff --cached --check` чистый;
+* Git commit создан;
+* README обновлён;
+* оба commit опубликованы в `origin/main`;
+* рабочее дерево чистое;
+* backup создан.
 
 ## Следующий рабочий шаг
 
-Перед созданием Git commit необходимо:
+Подготовить **Commit #05 — RAG pipeline**.
 
-1. Проверить `git diff`.
-2. Проверить `git status`.
-3. Выполнить финальный test suite.
-4. Проверить рабочее дерево.
-5. Создать Git commit:
+Перед началом разработки следующего этапа необходимо:
 
-```text
-feat: implement retrieval
-```
-
-6. Выполнить push в `origin/main`.
-7. Обновить `PROJECT_STATE.md` после создания commit.
-8. Создать backup текущего состояния.
-9. Подготовить context-transfer prompt для следующего этапа.
+1. Использовать текущий `PROJECT_STATE.md` как точку передачи контекста.
+2. Зафиксировать границы MVP для RAG pipeline.
+3. Определить минимальный application flow:
+   `User Query → Retrieval → Context → LLM → Answer + Sources`.
+4. Сохранить fallback при недостаточном контексте.
+5. Не добавлять Agentic RAG, LangGraph, hybrid search, reranking или external web search.
+6. Подготовить технический план и тесты до начала реализации.
 
 Главный принцип:
 
