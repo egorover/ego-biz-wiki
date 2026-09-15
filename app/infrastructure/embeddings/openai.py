@@ -25,3 +25,7 @@ class OpenAIEmbeddingProvider:
     def embed(self, texts: Sequence[str]) -> list[list[float]]:
         """Generate embeddings for the supplied texts."""
         return self._embeddings.embed_documents(list(texts))
+
+    def embed_query(self, query: str) -> list[float]:
+        """Generate an embedding for a single query."""
+        return self._embeddings.embed_query(query)

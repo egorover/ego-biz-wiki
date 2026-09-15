@@ -7,6 +7,8 @@ from typing import Any
 import chromadb
 
 from app.domain.chunk import DocumentChunk
+from app.domain.document import DocumentMetadata
+from app.domain.retrieval import RetrievedChunk
 
 
 class ChromaVectorStore:
@@ -48,6 +50,62 @@ class ChromaVectorStore:
                     for chunk in chunk_batch
                 ],
             )
+
+    def query(
+        self,
+        embedding: Sequence[float],
+        n_results: int,
+    ) -> list[RetrievedChunk]:
+        """Return nearest indexed chunks for a query embedding."""
+        if n_results < 1:
+            raise ValueError("n_results must be greater than zero.")
+
+        if self._collection.count() == 0:
+            return []
+
+        result = self._collection.query(
+            query_embeddings=[list(embedding)],
+            n_results=n_results,
+            include=["documents", "metadatas", "distances"],
+        )
+
+        ids = result["ids"][0]
+        documents = result["documents"][0]
+        metadatas = result["metadatas"][0]
+        distances = result["distances"][0]
+
+        retrieved: list[RetrievedChunk] = []
+
+        for chunk_id, content, metadata, distance in zip(
+            ids,
+            documents,
+            metadatas,
+            distances,
+            strict=True,
+        ):
+            if content is None or metadata is None or distance is None:
+                continue
+
+            metadata_values = dict(metadata)
+            document_id = str(metadata_values.pop("document_id"))
+            metadata_values.pop("chunk_index", None)
+
+            document_metadata = DocumentMetadata.model_validate(
+                {"document_id": document_id, **metadata_values}
+            )
+
+            retrieved.append(
+                RetrievedChunk(
+                    chunk_id=chunk_id,
+                    document_id=document_id,
+                    content=content,
+                    distance=float(distance),
+                    metadata=document_metadata,
+                    source=document_metadata.source,
+                )
+            )
+
+        return retrieved
 
     @staticmethod
     def _sanitize_metadata(metadata: dict[str, Any]) -> dict[str, str | int]:
