@@ -6,6 +6,7 @@ from fastapi import FastAPI
 
 from app.api.routes.chat import router as chat_router
 from app.api.routes.health import router as health_router
+from app.api.routes.search import router as search_router
 from app.infrastructure.config.settings import get_settings
 
 
@@ -29,6 +30,7 @@ def create_app() -> FastAPI:
     )
     application.include_router(health_router)
     application.include_router(chat_router)
+    application.include_router(search_router)
     return application
 
 
