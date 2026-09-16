@@ -2,9 +2,21 @@
 
 ## Текущий Commit
 
-**Commit #05 — RAG Pipeline**
+**Commit #06 — Search Endpoint**
 
-Статус: **РЕАЛИЗОВАН — ПРОТЕСТИРОВАН — ГОТОВ К COMMIT**
+Статус: **РЕАЛИЗОВАН — ПРОТЕСТИРОВАН — ЗАКОММИЧЕН — ОТПРАВЛЕН В GITHUB**
+
+Commit:
+
+```text
+7dff25b feat: implement search endpoint
+```
+
+GitHub:
+
+```text
+https://github.com/egorover/ego-biz-wiki
+```
 
 ## Реализовано
 
@@ -19,37 +31,59 @@
 ### Indexing
 
 * Реализован indexing pipeline.
+
 * Реализована загрузка документов через `knowledge_base/manifest.yaml`.
+
 * Реализован token-aware chunking.
+
 * Начальные параметры:
 
   * `chunk_size=800`
   * `chunk_overlap=120`
+
 * Реализована генерация embeddings через OpenAI-compatible API.
+
 * Поддерживается ProxyAPI через `OPENAI_BASE_URL`.
+
 * Реализовано persistent storage в ChromaDB.
+
 * Используется коллекция `ego_biz_wiki`.
+
 * Используются детерминированные `chunk_id`.
+
 * Повторный indexing выполняется через upsert.
+
 * Добавлена документация `docs/INDEXING.md`.
 
 ### Retrieval
 
 * Реализована semantic retrieval subsystem.
+
 * Добавлена domain-модель `RetrievedChunk`.
+
 * Добавлен application service `RetrievalService`.
+
 * Application layer использует:
 
   * `QueryEmbeddingProvider`
   * `RetrievalVectorStore`
+
 * Реализован query embedding.
+
 * Реализован ChromaDB similarity search.
+
 * Реализован configurable `top_k`.
+
 * Реализован configurable distance threshold.
+
 * Результаты сортируются по distance.
+
 * Реализовано сохранение metadata, source, document_id, chunk_id и distance.
+
 * Реализована обработка пустой ChromaDB collection.
+
 * Реализована валидация query, `top_k` и threshold.
+
 * Добавлена документация `docs/RETRIEVAL.md`.
 
 ### RAG
@@ -80,9 +114,50 @@
 
 * Сохранён `GET /health`.
 * Добавлен `POST /chat`.
+* Добавлен `POST /search`.
 * Добавлены `ChatRequest`, `ChatResponse` и `ChatSource`.
+* Добавлены `SearchRequest`, `SearchResponse` и `SearchResult`.
 * Добавлена dependency injection через `get_rag_service`.
-* FastAPI route не содержит инфраструктурной логики.
+* Добавлена dependency injection через `get_retrieval_service`.
+* `POST /search` использует существующий `RetrievalService`.
+* `POST /search` не вызывает LLM.
+* FastAPI routes не содержат инфраструктурной логики.
+
+### Search Endpoint
+
+Реализован:
+
+```text
+POST /search
+```
+
+Request:
+
+```json
+{
+  "query": "Как оформить отпуск?"
+}
+```
+
+Response содержит:
+
+```text
+chunk_id
+document_id
+title
+source
+content
+distance
+```
+
+Endpoint использует параметры retrieval из application configuration:
+
+```text
+RETRIEVAL_TOP_K=5
+RETRIEVAL_SCORE_THRESHOLD=1.30
+```
+
+Дополнительные `top_k` и `threshold` в API request не передаются.
 
 ## Текущий RAG pipeline
 
@@ -103,6 +178,24 @@ LLM
 ↓
 Answer + Sources
 ```
+
+Для `POST /search` pipeline заканчивается на retrieved results:
+
+```text
+Search Query
+↓
+Query Embedding
+↓
+ChromaDB Similarity Search
+↓
+Top-K
+↓
+Distance Threshold
+↓
+Search Results
+```
+
+LLM для `POST /search` не используется.
 
 ## Конфигурация Retrieval
 
@@ -154,11 +247,19 @@ sources = []
 
 LLM при этом не вызывается.
 
+Для `POST /search` при отсутствии релевантных результатов возвращается:
+
+```json
+{
+  "results": []
+}
+```
+
 ## Проверки
 
 ### Full test suite
 
-**41 passed, 1 warning**
+**45 passed, 1 warning**
 
 Warning:
 
@@ -166,9 +267,65 @@ Warning:
 
 Предупреждение относится к внешней зависимости и не связано с логикой проекта.
 
-### Real end-to-end smoke tests
+### API verification
 
 Проверены:
+
+```text
+GET /health
+POST /chat
+POST /search
+```
+
+Для `POST /search` проверены:
+
+```text
+Положительный запрос:
+Как оформить отпуск?
+```
+
+Результат:
+
+* HTTP 200;
+* найдены релевантные Knowledge Base chunks;
+* возвращены `chunk_id`, `document_id`, `title`, `source`, `content`, `distance`;
+* LLM не вызывается.
+
+Нерелевантный запрос:
+
+```text
+Как заказать домик на Марсе?
+```
+
+Результат:
+
+```json
+{
+  "results": []
+}
+```
+
+### Search unit tests
+
+Проверены:
+
+* корректное преобразование `RetrievedChunk` в API response;
+* пустой список результатов;
+* отклонение пустого query;
+* корректный вызов `RetrievalService`.
+
+### Integration tests
+
+Проверены:
+
+* `GET /health`;
+* `POST /chat`;
+* `POST /search`;
+* изоляция FastAPI dependency overrides между тестами.
+
+## Real end-to-end smoke tests
+
+Ранее проверены:
 
 ```text
 Как оформить отпуск?
@@ -197,10 +354,16 @@ Warning:
 "sources": []
 ```
 
-Таким образом, end-to-end flow работает через:
+Таким образом, основной end-to-end flow работает через:
 
 ```text
 FastAPI → RAGService → RetrievalService → ChromaDB → LLM
+```
+
+Search flow работает через:
+
+```text
+FastAPI → RetrievalService → ChromaDB
 ```
 
 ## Архитектурные решения
@@ -218,6 +381,8 @@ API
 ```
 
 Application layer использует Protocols и не зависит от конкретных инфраструктурных реализаций.
+
+Для `POST /search` используется тот же `RetrievalService`, что и в RAG pipeline. Отдельный механизм поиска не создавался.
 
 MVP сознательно не использует:
 
@@ -260,7 +425,6 @@ API keys не должны попадать в Git или logging.
 
 Не реализованы:
 
-* `POST /search`;
 * Streamlit UI;
 * formal evaluation dataset;
 * Document Standardization;
@@ -272,15 +436,14 @@ API keys не должны попадать в Git или logging.
 
 ## Следующий этап
 
-Следующий рабочий этап — **Commit #06**.
+Следующий рабочий этап — **Commit #07**.
 
 Предварительно необходимо определить его минимальную границу и не начинать реализацию до подтверждения плана.
 
 Приоритетные следующие компоненты:
 
-1. `POST /search`;
-2. Streamlit UI;
-3. evaluation dataset.
+1. Streamlit UI;
+2. formal evaluation dataset.
 
 При выборе следующего этапа сохраняется принцип:
 
@@ -288,22 +451,54 @@ API keys не должны попадать в Git или logging.
 
 ## Git State
 
-Перед завершением Commit #05 необходимо проверить:
+Текущее состояние:
+
+```text
+Commit:
+7dff25b feat: implement search endpoint
+```
+
+Удалённый репозиторий:
+
+```text
+https://github.com/egorover/ego-biz-wiki
+```
+
+Ветка:
+
+```text
+main
+```
+
+Синхронизация:
+
+```text
+local main = origin/main
+```
+
+Рабочее дерево:
+
+```text
+clean
+```
+
+Последняя проверка:
 
 ```text
 git status
-git log
-git remote
+→ Your branch is up to date with 'origin/main'.
+→ nothing to commit, working tree clean
 ```
-
-После commit:
-
-* local `main` должен быть синхронизирован с `origin/main`;
-* рабочее дерево должно быть чистым.
 
 ## Backup
 
-После завершения Commit #05 необходимо создать backup без:
+Backup текущего состояния Commit #06 создан:
+
+```text
+C:\Users\alexe\Desktop\ego-biz-wiki-backup-commit06
+```
+
+Backup не содержит:
 
 ```text
 .git
@@ -312,24 +507,33 @@ __pycache__
 .pytest_cache
 ```
 
+Наличие ключевого файла проверено:
+
+```text
+app\api\routes\search.py
+→ True
+```
+
 Предыдущий backup:
 
 ```text
-C:\Users\alexe\Desktop\ego-biz-wiki-backup-commit04
+C:\Users\alexe\Desktop\ego-biz-wiki-backup-commit05
 ```
 
-## Завершение Commit #05
+## Завершение Commit #06
 
-До финального commit необходимо:
+Выполнено:
 
-1. Обновить README.
-2. Обновить PROJECT_STATE.
-3. Проверить полный test suite.
-4. Проверить `git diff --check`.
-5. Проверить staged diff.
-6. Создать Git commit.
-7. Push в `origin/main`.
-8. Проверить GitHub synchronization.
-9. Проверить чистое рабочее дерево.
-10. Создать backup.
-11. Подготовить Transfer Prompt для следующего чата.
+1. Реализован `POST /search`.
+2. Добавлены API schemas.
+3. Добавлена dependency injection для `RetrievalService`.
+4. Добавлены unit tests.
+5. Обновлены integration tests.
+6. Выполнен полный test suite.
+7. Выполнен `git diff --check`.
+8. Создан Git commit.
+9. Выполнен push в `origin/main`.
+10. Проверена GitHub synchronization.
+11. Проверено чистое рабочее дерево.
+12. Создан backup.
+13. Подготовлено состояние проекта для следующего рабочего этапа.

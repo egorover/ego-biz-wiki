@@ -8,11 +8,19 @@ EgoBiz Wiki — компактный RAG-ассистент для ответо�
 
 ## Level 4 — Development
 
-## Commit #05 — RAG Pipeline
+## Commit #06 — Search Endpoint
 
-Проект содержит работоспособный end-to-end RAG pipeline:
+Проект содержит работоспособный end-to-end RAG pipeline и отдельный semantic search API:
 
-`User Query → Retrieval → Context → LLM → Answer + Sources`
+```text
+User Query → Retrieval → Context → LLM → Answer + Sources
+```
+
+Для поиска без генерации ответа:
+
+```text
+Search Query → Retrieval → Search Results
+```
 
 Реализованы:
 
@@ -26,6 +34,7 @@ EgoBiz Wiki — компактный RAG-ассистент для ответо�
 * fallback при недостаточном контексте;
 * источники ответа;
 * FastAPI endpoint `/chat`;
+* FastAPI endpoint `/search`;
 * dependency injection через application interfaces;
 * OpenAI-compatible LLM integration;
 * unit и integration tests.
@@ -37,7 +46,23 @@ RETRIEVAL_TOP_K=5
 RETRIEVAL_SCORE_THRESHOLD=1.30
 ```
 
-Threshold `1.30` выбран на основе реального retrieval smoke test на текущей демонстрационной Knowledge Base. Для релевантного запроса `Как оформить отпуск?` результаты имели distance до `1.2040`, а для явно нерелевантного запроса `Как заказать домик на Марсе?` ближайший результат имел distance `1.4995`.
+Threshold `1.30` выбран на основе реальных retrieval smoke tests на текущей демонстрационной Knowledge Base.
+
+Для релевантного запроса:
+
+```text
+Как оформить отпуск?
+```
+
+результаты имели distance до `1.2040`.
+
+Для явно нерелевантного запроса:
+
+```text
+Как заказать домик на Марсе?
+```
+
+ближайший результат имел distance `1.4995`.
 
 При отсутствии результатов после threshold применяется точный fallback:
 
@@ -68,6 +93,24 @@ LLM
     ↓
 Answer + Sources
 ```
+
+Search flow:
+
+```text
+Search Query
+    ↓
+Query Embedding
+    ↓
+ChromaDB Similarity Search
+    ↓
+Top-K
+    ↓
+Distance Threshold
+    ↓
+Search Results
+```
+
+Для `POST /search` LLM не используется.
 
 Архитектура приложения:
 
@@ -142,6 +185,16 @@ Invoke-RestMethod -Method Post `
   ConvertTo-Json -Depth 5
 ```
 
+Search:
+
+```powershell
+Invoke-RestMethod -Method Post `
+  -Uri "http://127.0.0.1:8000/search" `
+  -ContentType "application/json" `
+  -Body '{"query":"Как оформить отпуск?"}' |
+  ConvertTo-Json -Depth 5
+```
+
 Полный test suite:
 
 ```powershell
@@ -154,7 +207,9 @@ python -m pytest
 
 Формат, metadata strategy и принцип «идеального документооборота» описаны в:
 
-`docs/KNOWLEDGE_BASE.md`
+```text
+docs/KNOWLEDGE_BASE.md
+```
 
 Это сознательно нормализованный внутренний формат MVP, а не утверждение о реальном состоянии корпоративной документации.
 
@@ -176,9 +231,18 @@ Embeddings
 ChromaDB
 ```
 
+Основные параметры chunking:
+
+```text
+chunk_size=800
+chunk_overlap=120
+```
+
 Подробное описание:
 
-`docs/INDEXING.md`
+```text
+docs/INDEXING.md
+```
 
 ## Retrieval
 
@@ -202,7 +266,9 @@ Retrieved Chunks
 
 Подробное описание:
 
-`docs/RETRIEVAL.md`
+```text
+docs/RETRIEVAL.md
+```
 
 ## RAG
 
@@ -227,6 +293,58 @@ RAGResponse
 LLM получает только retrieved context и системную инструкцию не использовать внешние знания и не выдумывать факты.
 
 При отсутствии релевантного контекста LLM не вызывается, а application layer возвращает фиксированный fallback.
+
+## Search
+
+В Commit #06 реализован отдельный API для semantic search:
+
+```text
+POST /search
+```
+
+Search endpoint использует существующий `RetrievalService` и не вызывает LLM.
+
+Request:
+
+```json
+{
+  "query": "Как оформить отпуск?"
+}
+```
+
+Response:
+
+```json
+{
+  "results": [
+    {
+      "chunk_id": "...",
+      "document_id": "hr-vacation-policy",
+      "title": "Политика отпусков",
+      "source": "HR / Политика отпусков",
+      "content": "...",
+      "distance": 0.68
+    }
+  ]
+}
+```
+
+При отсутствии релевантных результатов:
+
+```json
+{
+  "results": []
+}
+```
+
+Параметры retrieval для Search API берутся из конфигурации приложения:
+
+```text
+RETRIEVAL_TOP_K=5
+RETRIEVAL_SCORE_THRESHOLD=1.30
+```
+
+Дополнительные `top_k` и `threshold` в API request не передаются.
 
 ## API
 
@@ -270,20 +388,59 @@ Response:
 }
 ```
 
+### `POST /search`
+
+Semantic search по Knowledge Base без генерации ответа LLM.
+
+Request:
+
+```json
+{
+  "query": "Как оформить отпуск?"
+}
+```
+
+Response содержит:
+
+```text
+chunk_id
+document_id
+title
+source
+content
+distance
+```
+
 ## Testing
 
 Текущий полный test suite:
 
-**41 passed, 1 warning**
+**45 passed, 1 warning**
 
 Предупреждение относится к `Starlette / AnyIO` и не связано с логикой проекта.
 
-Дополнительно выполнены реальные smoke tests через ProxyAPI и FastAPI `/chat` для:
+Дополнительно выполнены реальные API smoke tests.
 
-* `Как оформить отпуск?`
-* `Как подключиться к VPN?`
-* `Что делать при фишинговом письме?`
-* `Как заказать домик на Марсе?`
+Проверены:
+
+* `GET /health`;
+* `POST /chat`;
+* `POST /search`.
+
+Для `POST /search` проверены:
+
+* релевантный запрос `Как оформить отпуск?`;
+* нерелевантный запрос `Как заказать домик на Марсе?`;
+* корректное возвращение search results;
+* корректное возвращение пустого списка результатов;
+* отсутствие вызова LLM.
+
+Для `POST /chat` проверены:
+
+* `Как оформить отпуск?`;
+* `Как подключиться к VPN?`;
+* `Что делать при фишинговом письме?`;
+* `Как заказать домик на Марсе?`.
 
 Релевантные вопросы возвращают grounded answers и источники.
 
@@ -299,8 +456,9 @@ Out-of-KB запрос возвращает fallback и пустой списо�
 
 В текущем MVP не реализованы:
 
-* API `/search`;
 * Streamlit UI;
+* formal evaluation dataset;
+* Document Standardization для разнородных PDF/DOCX/XLSX/HTML/TXT;
 * Agentic RAG;
 * LangGraph;
 * hybrid search;
@@ -315,11 +473,11 @@ Out-of-KB запрос возвращает fallback и пустой списо�
 
 Следующие возможные этапы:
 
-1. `/search` API;
-2. Streamlit UI;
-3. evaluation dataset и формальная оценка качества;
-4. Document Standardization для разнородных PDF/DOCX/XLSX/HTML/TXT;
-5. дальнейшее улучшение retrieval только на основании результатов evaluation.
+1. Streamlit UI;
+2. evaluation dataset и формальная оценка качества;
+3. Document Standardization для разнородных PDF/DOCX/XLSX/HTML/TXT;
+4. дальнейшее улучшение retrieval только на основании результатов evaluation;
+5. другие расширения MVP только при наличии обоснованных требований.
 
 ## Главный принцип проекта
 
