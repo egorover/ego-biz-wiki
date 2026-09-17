@@ -11,7 +11,8 @@ def test_settings_defaults() -> None:
     assert settings.app_version == "0.1.0"
     assert settings.app_env == "development"
     assert settings.log_level == "INFO"
-
+    assert settings.retrieval_top_k == 5
+    assert settings.retrieval_score_threshold == 1.30
 
 def test_settings_accept_environment_overrides(monkeypatch) -> None:
     """Environment variables should override configuration defaults."""

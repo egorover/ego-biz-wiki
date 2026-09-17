@@ -37,7 +37,7 @@ class Settings(BaseSettings):
     chunk_overlap: int = Field(default=120, ge=0)
 
     retrieval_top_k: int = Field(default=5, ge=1)
-    retrieval_score_threshold: float | None = Field(default=None, ge=0)
+    retrieval_score_threshold: float | None = Field(default=1.30, ge=0)
 
     def model_post_init(self, __context: object) -> None:
         """Validate chunking settings after model initialization."""

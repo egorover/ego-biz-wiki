@@ -64,8 +64,11 @@ class RAGService:
             context=context,
         ).strip()
 
-        if not answer:
-            answer = FALLBACK_ANSWER
+        if not answer or answer == FALLBACK_ANSWER:
+            return RAGResponse(
+                answer=FALLBACK_ANSWER,
+                sources=[],
+            )
 
         sources = self._build_sources(chunks)
 

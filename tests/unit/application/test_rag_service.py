@@ -78,6 +78,32 @@ def test_returns_fallback_when_no_chunks_are_found() -> None:
     assert llm.last_query == ""
 
 
+def test_returns_fallback_without_sources_when_llm_returns_empty() -> None:
+    """Return fallback without sources when the LLM produces no answer."""
+    chunk = create_chunk()
+    retrieval = FakeRetrievalService(chunks=[chunk])
+    llm = FakeLLMProvider(response="")
+    service = RAGService(retrieval, llm)
+
+    response = service.answer("Какие правила парковки действуют?")
+
+    assert response.answer == FALLBACK_ANSWER
+    assert response.sources == []
+
+
+def test_returns_fallback_without_sources_when_llm_returns_fallback() -> None:
+    """Return fallback without sources when the LLM returns the fallback."""
+    chunk = create_chunk()
+    retrieval = FakeRetrievalService(chunks=[chunk])
+    llm = FakeLLMProvider(response=FALLBACK_ANSWER)
+    service = RAGService(retrieval, llm)
+
+    response = service.answer("Какие правила парковки действуют?")
+
+    assert response.answer == FALLBACK_ANSWER
+    assert response.sources == []
+
+
 def test_generates_answer_from_retrieved_context() -> None:
     """Pass the retrieved context to the LLM provider."""
     chunk = create_chunk()
