@@ -1,0 +1,485 @@
+version: "1.0"
+
+description: >
+  Формальный набор из 38 evaluation-кейсов для проверки retrieval,
+  RAG, fallback, source attribution и типичных сценариев использования
+  EgoBiz Wiki.
+
+cases:
+
+  # ============================================================
+  # RELEVANT — прямые вопросы по базе знаний
+  # ============================================================
+
+  - id: eval-001
+    question: "Что получает новый сотрудник в первый день работы?"
+    category: relevant
+    expected_behavior: answer
+    expected_sources:
+      - knowledge_base/hr/onboarding.md
+    expected_topics:
+      - корпоративная учётная запись
+      - ноутбук
+      - доступ к HR-системе
+      - рабочие каналы
+      - вводная встреча
+
+  - id: eval-002
+    question: "Как подключиться к корпоративному VPN?"
+    category: relevant
+    expected_behavior: answer
+    expected_sources:
+      - knowledge_base/it/vpn.md
+    expected_topics:
+      - утверждённый IT-клиент VPN
+      - корпоративная учётная запись
+      - профиль EgoTech Corporate
+      - проверка защищённого подключения
+
+  - id: eval-003
+    question: "Сколько дней оплачиваемого отпуска предоставляет компания?"
+    category: relevant
+    expected_behavior: answer
+    expected_sources:
+      - knowledge_base/hr/vacation_policy.md
+    expected_topics:
+      - 28 календарных дней
+      - оплачиваемый ежегодный отпуск
+      - рабочий год
+
+  - id: eval-004
+    question: "За сколько дней до отпуска нужно создать запрос в HR-системе?"
+    category: relevant
+    expected_behavior: answer
+    expected_sources:
+      - knowledge_base/hr/vacation_policy.md
+    expected_topics:
+      - 14 календарных дней
+      - согласование с руководителем
+      - корпоративная HR-система
+
+  - id: eval-005
+    question: "Как сообщить о потере корпоративного ноутбука?"
+    category: relevant
+    expected_behavior: answer
+    expected_sources:
+      - knowledge_base/it/corporate_laptop.md
+      - knowledge_base/security/incident_reporting.md
+    expected_topics:
+      - немедленно сообщить
+      - IT
+      - Security
+      - не скрывать инцидент
+      - incident-reporting
+
+  - id: eval-006
+    question: "Как запросить доступ к корпоративной системе?"
+    category: relevant
+    expected_behavior: answer
+    expected_sources:
+      - knowledge_base/it/access_requests.md
+    expected_topics:
+      - корпоративный портал заявок
+      - система
+      - требуемая роль
+      - рабочая цель
+      - срок временного доступа
+
+  - id: eval-007
+    question: "Можно ли передавать корпоративный пароль другому сотруднику?"
+    category: relevant
+    expected_behavior: answer
+    expected_sources:
+      - knowledge_base/security/password_policy.md
+    expected_topics:
+      - пароль нельзя передавать
+      - уникальность пароля
+      - корпоративная политика паролей
+
+  - id: eval-008
+    question: "Как оформить больничный?"
+    category: relevant
+    expected_behavior: answer
+    expected_sources:
+      - knowledge_base/hr/sick_leave.md
+    expected_topics:
+      - сообщение руководителю
+      - HR-система
+      - подтверждающий документ
+      - защищённый корпоративный канал
+
+  - id: eval-009
+    question: "Какой стандартный рабочий график в компании?"
+    category: relevant
+    expected_behavior: answer
+    expected_sources:
+      - knowledge_base/hr/work_schedule.md
+    expected_topics:
+      - понедельник-пятница
+      - 10:00-18:00
+      - московское время
+
+  - id: eval-010
+    question: "Что делать, если потерял корпоративный пропуск?"
+    category: relevant
+    expected_behavior: answer
+    expected_sources:
+      - knowledge_base/operations/office_access.md
+    expected_topics:
+      - немедленно сообщить
+      - Operations
+      - служба доступа
+      - блокировка пропуска
+
+  - id: eval-011
+    question: "Как оформить командировку до покупки билетов?"
+    category: relevant
+    expected_behavior: answer
+    expected_sources:
+      - knowledge_base/operations/business_travel.md
+    expected_topics:
+      - корпоративный сервис поездок
+      - цель
+      - даты
+      - город
+      - проект или клиент
+
+  - id: eval-012
+    question: "Какой срок реакции установлен для обращения P1?"
+    category: relevant
+    expected_behavior: answer
+    expected_sources:
+      - knowledge_base/customer_operations/sla.md
+    expected_topics:
+      - P1
+      - критическая недоступность
+      - 30 минут
+      - первичная реакция
+
+
+  # ============================================================
+  # CROSS-CATEGORY — вопросы, требующие нескольких документов
+  # ============================================================
+
+  - id: eval-013
+    question: "Я работаю удалённо. Как получить доступ к внутренним системам?"
+    category: cross_category
+    expected_behavior: answer
+    expected_sources:
+      - knowledge_base/hr/remote_work.md
+      - knowledge_base/it/vpn.md
+    expected_topics:
+      - удалённая работа
+      - корпоративное устройство
+      - VPN
+      - внутренние системы
+
+  - id: eval-014
+    question: "Я потерял ноутбук во время командировки. Куда сообщать?"
+    category: cross_category
+    expected_behavior: answer
+    expected_sources:
+      - knowledge_base/operations/business_travel.md
+      - knowledge_base/it/corporate_laptop.md
+      - knowledge_base/security/incident_reporting.md
+    expected_topics:
+      - командировка
+      - потеря устройства
+      - IT
+      - Security
+      - немедленное сообщение
+
+  - id: eval-015
+    question: "Что делать, если я ввёл пароль на подозрительном сайте?"
+    category: cross_category
+    expected_behavior: answer
+    expected_sources:
+      - knowledge_base/security/phishing.md
+      - knowledge_base/security/password_policy.md
+      - knowledge_base/security/incident_reporting.md
+    expected_topics:
+      - сообщить Security и IT
+      - сменить пароль
+      - потенциальный инцидент
+      - не удалять доказательства
+
+  - id: eval-016
+    question: "Что делать с корпоративной почтой при работе из дома?"
+    category: cross_category
+    expected_behavior: answer
+    expected_sources:
+      - knowledge_base/it/corporate_email.md
+      - knowledge_base/hr/remote_work.md
+    expected_topics:
+      - корпоративная почта
+      - VPN
+      - политика безопасности
+      - рабочие коммуникации
+
+  - id: eval-017
+    question: "Как запросить оборудование для работы и кто должен его согласовать?"
+    category: cross_category
+    expected_behavior: answer
+    expected_sources:
+      - knowledge_base/operations/equipment.md
+      - knowledge_base/it/corporate_laptop.md
+    expected_topics:
+      - Operations
+      - заявка
+      - руководитель
+      - IT
+      - регистрация оборудования
+
+  - id: eval-018
+    question: "Что происходит с доступами сотрудника при переводе в другую команду?"
+    category: cross_category
+    expected_behavior: answer
+    expected_sources:
+      - knowledge_base/security/access_control.md
+      - knowledge_base/it/access_requests.md
+    expected_topics:
+      - пересмотр доступов
+      - новая роль
+      - руководитель
+      - контролируемый процесс
+
+  - id: eval-019
+    question: "Когда клиентское обращение нужно эскалировать?"
+    category: cross_category
+    expected_behavior: answer
+    expected_sources:
+      - knowledge_base/customer_operations/escalation.md
+      - knowledge_base/customer_operations/sla.md
+      - knowledge_base/customer_operations/incident_handling.md
+    expected_topics:
+      - риск нарушения SLA
+      - повторяющаяся проблема
+      - отсутствие компетенции
+      - влияние на нескольких клиентов
+      - escalation
+
+  - id: eval-020
+    question: "Как действовать при критическом клиентском инциденте и что сообщить клиенту?"
+    category: cross_category
+    expected_behavior: answer
+    expected_sources:
+      - knowledge_base/customer_operations/incident_handling.md
+      - knowledge_base/customer_operations/escalation.md
+      - knowledge_base/customer_operations/customer_communication.md
+      - knowledge_base/customer_operations/sla.md
+    expected_topics:
+      - регистрация инцидента
+      - приоритет
+      - escalation
+      - текущий статус
+      - влияние
+      - следующий шаг
+
+
+  # ============================================================
+  # TYPICAL USER — естественные вопросы сотрудника
+  # ============================================================
+
+  - id: eval-021
+    question: "Я первый день в компании — с чего мне начать?"
+    category: typical_user
+    expected_behavior: answer
+    expected_sources:
+      - knowledge_base/hr/onboarding.md
+    expected_topics:
+      - корпоративная учётная запись
+      - ноутбук
+      - HR-система
+      - рабочие каналы
+      - вводная встреча
+
+  - id: eval-022
+    question: "У меня не подключается VPN, что делать?"
+    category: typical_user
+    expected_behavior: answer
+    expected_sources:
+      - knowledge_base/it/vpn.md
+    expected_topics:
+      - не отключать защитные средства
+      - зафиксировать текст ошибки
+      - IT Service Desk
+
+  - id: eval-023
+    question: "Мне пришло странное письмо с просьбой срочно ввести код. Что делать?"
+    category: typical_user
+    expected_behavior: answer
+    expected_sources:
+      - knowledge_base/security/phishing.md
+      - knowledge_base/it/corporate_email.md
+    expected_topics:
+      - подозрительное сообщение
+      - не переходить по ссылке
+      - не вводить код
+      - Security
+
+  - id: eval-024
+    question: "Мне нужно купить оборудование для работы. Как это сделать?"
+    category: typical_user
+    expected_behavior: answer
+    expected_sources:
+      - knowledge_base/operations/procurement.md
+      - knowledge_base/operations/equipment.md
+    expected_topics:
+      - портал закупок
+      - назначение
+      - характеристики
+      - количество
+      - согласование
+
+
+  # ============================================================
+  # SOURCE ATTRIBUTION — проверка корректности источников
+  # ============================================================
+
+  - id: eval-025
+    question: "Какой профиль нужно выбрать при подключении к корпоративному VPN?"
+    category: source_attribution
+    expected_behavior: answer
+    expected_sources:
+      - knowledge_base/it/vpn.md
+    expected_topics:
+      - EgoTech Corporate
+      - VPN
+      - профиль
+
+  - id: eval-026
+    question: "Какие признаки могут указывать на фишинговое сообщение?"
+    category: source_attribution
+    expected_behavior: answer
+    expected_sources:
+      - knowledge_base/security/phishing.md
+    expected_topics:
+      - срочность
+      - необычный адрес отправителя
+      - незнакомый домен
+      - неожиданные вложения
+      - запрос пароля или кода
+
+  - id: eval-027
+    question: "Сколько времени даётся на первичную реакцию по P3?"
+    category: source_attribution
+    expected_behavior: answer
+    expected_sources:
+      - knowledge_base/customer_operations/sla.md
+    expected_topics:
+      - P3
+      - 8 рабочих часов
+      - первичная реакция
+
+  - id: eval-028
+    question: "Можно ли самостоятельно отключить защитное ПО на корпоративном ноутбуке?"
+    category: source_attribution
+    expected_behavior: answer
+    expected_sources:
+      - knowledge_base/it/corporate_laptop.md
+    expected_topics:
+      - защитное ПО
+      - нельзя отключать
+      - корпоративный ноутбук
+
+  - id: eval-029
+    question: "Что делать, если нужной информации нет в базе знаний?"
+    category: relevant
+    expected_behavior: answer
+    expected_sources:
+      - knowledge_base/faq/general_faq.md
+    expected_topics:
+      - не придумывать ответ
+      - запросить уточнение
+      - направить вопрос ответственному подразделению
+
+  - id: eval-030
+    question: "Как самостоятельно сбросить корпоративный пароль?"
+    category: relevant
+    expected_behavior: answer
+    expected_sources:
+      - knowledge_base/it/password_reset.md
+      - knowledge_base/security/password_policy.md
+    expected_topics:
+      - корпоративный портал управления учётными записями
+      - новый пароль должен соответствовать политике Security
+      - повторный вход в рабочие системы
+
+
+  # ============================================================
+  # OUT-OF-KB — информации нет в базе
+  # ============================================================
+
+  - id: eval-031
+    question: "Какая зарплата предусмотрена для Python-разработчика?"
+    category: out_of_kb
+    expected_behavior: fallback
+    expected_sources: []
+    expected_topics:
+      - зарплата отсутствует в базе знаний
+
+  - id: eval-032
+    question: "Какие медицинские страховки предоставляет компания?"
+    category: out_of_kb
+    expected_behavior: fallback
+    expected_sources: []
+    expected_topics:
+      - медицинское страхование отсутствует в базе знаний
+
+  - id: eval-033
+    question: "Какой бюджет компания выделяет на обучение сотрудников?"
+    category: out_of_kb
+    expected_behavior: fallback
+    expected_sources: []
+    expected_topics:
+      - бюджет на обучение отсутствует в базе знаний
+
+  - id: eval-034
+    question: "Какой стек технологий используется в основном продукте компании?"
+    category: out_of_kb
+    expected_behavior: fallback
+    expected_sources: []
+    expected_topics:
+      - технический стек продукта отсутствует в базе знаний
+
+  - id: eval-035
+    question: "Как оформить отпуск по уходу за ребёнком?"
+    category: out_of_kb
+    expected_behavior: fallback
+    expected_sources: []
+    expected_topics:
+      - отпуск по уходу за ребёнком отсутствует в базе знаний
+
+
+  # ============================================================
+  # AMBIGUOUS — вопросы, требующие уточнения
+  # ============================================================
+
+  - id: eval-036
+    question: "Как получить доступ?"
+    category: ambiguous
+    expected_behavior: clarification
+    expected_sources: []
+    expected_topics:
+      - необходимо уточнить систему или ресурс
+      - роль или цель доступа
+
+  - id: eval-037
+    question: "Что делать, если устройство потеряно?"
+    category: ambiguous
+    expected_behavior: clarification
+    expected_sources: []
+    expected_topics:
+      - необходимо уточнить тип устройства
+      - корпоративное устройство
+      - возможный Security-инцидент
+
+  - id: eval-038
+    question: "Как изменить пароль?"
+    category: ambiguous
+    expected_behavior: clarification
+    expected_sources: []
+    expected_topics:
+      - необходимо уточнить корпоративный пароль
+      - возможна процедура password reset
+      - возможна политика паролей

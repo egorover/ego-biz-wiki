@@ -2,645 +2,393 @@
 
 ## AI Business Knowledge Assistant
 
-EgoBiz Wiki — компактный RAG-ассистент для ответов на вопросы сотрудников на основе контролируемой корпоративной базы знаний.
+EgoBiz Wiki — компактный RAG-based AI-ассистент для ответов на вопросы сотрудников на основе контролируемой корпоративной базы знаний.
 
-## Текущий статус
+Проект разработан как выпускной проект курса и представляет собой рабочий MVP для демонстрационной компании **EgoTech Solutions**.
 
-## Level 4 — Development
+Основной принцип проекта:
 
-## Commit #07 — Streamlit UI
+> **SIMPLE, COMPLETE & WORKING MVP > COMPLEX, UNSTABLE PRODUCT**
 
-Проект содержит работоспособный end-to-end RAG pipeline, semantic search API и минимальный пользовательский интерфейс Streamlit:
+---
 
-```text
-User → Streamlit UI → FastAPI → Retrieval → Context → LLM → Answer + Sources
-```
+## Что делает EgoBiz Wiki
 
-Для поиска без генерации ответа:
+Сотрудник задаёт вопрос на естественном языке.
 
-```text
-Search Query → Retrieval → Search Results
-```
+EgoBiz Wiki:
 
-Реализованы:
+1. преобразует вопрос в embedding;
+2. выполняет semantic search по корпоративной Knowledge Base;
+3. отбирает релевантные фрагменты;
+4. передаёт найденный контекст в LLM;
+5. формирует ответ на основе найденной информации;
+6. показывает источники, использованные для ответа.
 
-* стандартизированная демонстрационная Knowledge Base EgoTech Solutions;
+Если в Knowledge Base недостаточно информации, система не пытается придумать ответ и возвращает:
 
-* indexing pipeline;
+> В базе знаний не найдено достаточно информации для достоверного ответа на этот вопрос.
 
-* persistent ChromaDB index;
+---
 
-* semantic retrieval;
+## Current Status
 
-* configurable `top_k`;
+**Commit #08 — Formal Evaluation Dataset**
 
-* configurable distance threshold;
+Основные функциональные возможности MVP реализованы:
 
-* grounded LLM answer generation;
-
-* fallback при недостаточном контексте;
-
-* источники ответа;
-
-* FastAPI endpoint `/chat`;
-
-* FastAPI endpoint `/search`;
-
-* FastAPI endpoint `/index`;
-
-* dependency injection через application interfaces;
-
-* OpenAI-compatible LLM integration;
-
+* корпоративная Knowledge Base;
+* документный indexing pipeline;
+* persistent ChromaDB vector store;
+* semantic Retrieval;
+* configurable retrieval threshold;
+* RAG pipeline;
+* OpenAI-compatible LLM provider;
+* deterministic fallback при отсутствии достаточного контекста;
+* FastAPI backend;
+* `/health`, `/index`, `/search` и `/chat`;
 * Streamlit UI;
+* отображение источников;
+* unit и integration tests;
+* формальный evaluation dataset.
 
-* отображение ответа и источников в пользовательском интерфейсе;
+Текущий evaluation dataset содержит **38 контролируемых evaluation cases**.
 
-* обработка пустого запроса;
+Evaluation dataset предназначен для систематической проверки качества текущего RAG pipeline и дальнейшего анализа Retrieval.
 
-* обработка недоступности FastAPI;
+---
 
-* unit и integration tests.
+## Основные возможности
 
-Для MVP используется:
+### Knowledge Base
 
-```text
-RETRIEVAL_TOP_K=5
+В демонстрационной Knowledge Base находятся документы EgoTech Solutions по направлениям:
 
-RETRIEVAL_SCORE_THRESHOLD=1.30
-```
+* HR;
+* IT;
+* Security;
+* Operations;
+* Customer Operations;
+* FAQ.
 
-Threshold `1.30` выбран на основе реальных retrieval smoke tests на текущей демонстрационной Knowledge Base.
+Текущая база содержит **23 Markdown-документа** и `manifest.yaml`.
 
-Для релевантного запроса:
+Используемый в MVP нормализованный Markdown-формат представляет собой **наш идеальный документооборот**.
 
-```text
-Как оформить отпуск?
-```
+Это сознательное упрощение для демонстрационного проекта, а не утверждение о том, что реальные корпоративные документы всегда имеют такую структуру.
 
-результаты имели distance до `1.2040`.
+---
 
-Для явно нерелевантного запроса:
+### Indexing
 
-```text
-Как заказать домик на Марсе?
-```
-
-ближайший результат имел distance `1.4995`.
-
-При отсутствии результатов после threshold применяется точный fallback:
-
-```text
-В базе знаний не найдено достаточно информации для достоверного ответа на этот вопрос.
-```
-
-В этом случае источники не возвращаются.
-
-## Архитектура
-
-Основной application flow:
-
-```text
-User Query
-    ↓
-Streamlit UI
-    ↓
-POST /chat
-    ↓
-FastAPI
-    ↓
-Query Embedding
-    ↓
-ChromaDB Similarity Search
-    ↓
-Top-K
-    ↓
-Distance Threshold
-    ↓
-Retrieved Context
-    ↓
-LLM
-    ↓
-Answer + Sources
-```
-
-Search flow:
-
-```text
-Search Query
-    ↓
-POST /search
-    ↓
-FastAPI
-    ↓
-Query Embedding
-    ↓
-ChromaDB Similarity Search
-    ↓
-Top-K
-    ↓
-Distance Threshold
-    ↓
-Search Results
-```
-
-Для `POST /search` LLM не используется.
-
-Архитектура приложения:
-
-```text
-Domain
-    ↓
-Application
-    ↓
-Infrastructure
-    ↓
-API
-```
-
-Streamlit является отдельным пользовательским интерфейсом и не содержит собственной RAG-логики.
-
-Application layer не зависит от конкретной реализации LLM, embeddings или vector store.
-
-Для этого используются Protocols:
-
-* `QueryEmbeddingProvider`
-
-* `RetrievalVectorStore`
-
-* `RAGLLMProvider`
-
-* `RAGRetrievalService`
-
-Конкретные инфраструктурные реализации находятся в `app/infrastructure/`.
-
-## Требования
-
-* Python 3.12+
-
-* pip
-
-* Git
-
-## Локальная установка
-
-### Windows PowerShell
-
-```powershell
-py -3.12 -m venv .venv
-
-.\.venv\Scripts\Activate.ps1
-
-python -m pip install --upgrade pip
-
-python -m pip install -e ".[test]"
-
-Copy-Item .env.example .env
-```
-
-Перед запуском необходимо настроить API credentials в `.env`.
-
-Для ProxyAPI:
-
-```text
-OPENAI_BASE_URL=https://api.proxyapi.ru/openai/v1
-```
-
-## Запуск
-
-FastAPI:
-
-```powershell
-python -m uvicorn app.main:app --reload
-```
-
-Streamlit запускается в отдельном PowerShell:
-
-```powershell
-streamlit run .\ui\streamlit_app.py
-```
-
-Адрес FastAPI для Streamlit настраивается через:
-
-```text
-STREAMLIT_API_URL=http://127.0.0.1:8000
-```
-
-## Проверка
-
-Health check:
-
-```powershell
-Invoke-RestMethod http://127.0.0.1:8000/health
-```
-
-Chat:
-
-```powershell
-Invoke-RestMethod -Method Post `
-  -Uri "http://127.0.0.1:8000/chat" `
-  -ContentType "application/json" `
-  -Body '{"query":"Как оформить отпуск?"}' |
-  ConvertTo-Json -Depth 5
-```
-
-Search:
-
-```powershell
-Invoke-RestMethod -Method Post `
-  -Uri "http://127.0.0.1:8000/search" `
-  -ContentType "application/json" `
-  -Body '{"query":"Как оформить отпуск?"}' |
-  ConvertTo-Json -Depth 5
-```
-
-Полный test suite:
-
-```powershell
-python -m pytest
-```
-
-Streamlit:
-
-```powershell
-streamlit run .\ui\streamlit_app.py
-```
-
-После запуска Streamlit использует существующий FastAPI endpoint `/chat`.
-
-## Knowledge Base
-
-В Commit #02 добавлена стандартизированная демонстрационная база знаний EgoTech Solutions.
-
-Формат, metadata strategy и принцип «идеального документооборота» описаны в:
-
-```text
-docs/KNOWLEDGE_BASE.md
-```
-
-Это сознательно нормализованный внутренний формат MVP, а не утверждение о реальном состоянии корпоративной документации.
-
-Текущая Knowledge Base содержит 23 Markdown-документа и `manifest.yaml`.
-
-## Indexing
-
-В Commit #03 реализован indexing pipeline:
+Документы Knowledge Base проходят indexing pipeline:
 
 ```text
 Documents
     ↓
-Manifest
-    ↓
 Load
     ↓
-Chunking
+Split into chunks
     ↓
-Embeddings
+Generate embeddings
     ↓
-ChromaDB
+Store in ChromaDB
 ```
 
-Основные параметры chunking:
+Индекс является persistent и используется последующими Retrieval-запросами.
+
+---
+
+### Retrieval
+
+Retrieval выполняет semantic search по ChromaDB.
+
+Текущие MVP-параметры:
 
 ```text
-chunk_size=800
-
-chunk_overlap=120
+Chunk size: 800
+Chunk overlap: 120
+Embedding model: text-embedding-3-small
+Top-K: 5
+Distance threshold: 1.30
 ```
 
-Подробное описание:
+Используется Chroma distance: меньшее значение означает более близкое векторное соответствие.
+
+Текущий threshold является **MVP baseline** и не считается окончательно оптимальным.
+
+---
+
+### RAG
+
+Основной `/chat` pipeline:
 
 ```text
-docs/INDEXING.md
-```
-
-## Retrieval
-
-В Commit #04 реализован semantic retrieval поверх ChromaDB.
-
-Retrieval pipeline:
-
-```text
-Query
+User Query
     ↓
 Query Embedding
     ↓
-Chroma Similarity Search
+ChromaDB Retrieval
     ↓
-Top-K
+Top-K + Threshold
     ↓
-Distance Threshold
-    ↓
-Retrieved Chunks
-```
-
-Подробное описание:
-
-```text
-docs/RETRIEVAL.md
-```
-
-## RAG
-
-В Commit #05 retrieval подключён к LLM и реализован полноценный MVP RAG pipeline.
-
-RAG service:
-
-```text
-Query
-    ↓
-Retrieval
-    ↓
-Context
+Relevant Context
     ↓
 LLM
-    ↓
-RAGResponse
-    ├── answer
-    └── sources
-```
-
-LLM получает только retrieved context и системную инструкцию не использовать внешние знания и не выдумывать факты.
-
-При отсутствии релевантного контекста LLM не вызывается, а application layer возвращает фиксированный fallback.
-
-## Search
-
-В Commit #06 реализован отдельный API для semantic search:
-
-```text
-POST /search
-```
-
-Search endpoint использует существующий `RetrievalService` и не вызывает LLM.
-
-Request:
-
-```json
-{
-  "query": "Как оформить отпуск?"
-}
-```
-
-Response:
-
-```json
-{
-  "results": [
-    {
-      "chunk_id": "...",
-      "document_id": "hr-vacation-policy",
-      "title": "Политика отпусков",
-      "source": "HR / Политика отпусков",
-      "content": "...",
-      "distance": 0.68
-    }
-  ]
-}
-```
-
-При отсутствии релевантных результатов:
-
-```json
-{
-  "results": []
-}
-```
-
-Параметры retrieval для Search API берутся из конфигурации приложения:
-
-```text
-RETRIEVAL_TOP_K=5
-
-RETRIEVAL_SCORE_THRESHOLD=1.30
-```
-
-Дополнительные `top_k` и `threshold` в API request не передаются.
-
-## Streamlit UI
-
-В Commit #07 реализован минимальный пользовательский интерфейс на Streamlit.
-
-Streamlit UI использует существующий FastAPI backend и не содержит собственной RAG-логики.
-
-Основной flow:
-
-```text
-User
-    ↓
-Streamlit UI
-    ↓
-POST /chat
-    ↓
-FastAPI
-    ↓
-RAG Pipeline
     ↓
 Answer + Sources
 ```
 
-UI поддерживает:
+Если после Retrieval не найдено достаточно релевантного контекста, LLM не вызывается.
 
-* ввод вопроса;
+Это позволяет отделить ситуацию «информация отсутствует в базе» от генерации ответа без достаточной опоры на Knowledge Base.
 
-* проверку пустого запроса;
-
-* получение ответа через существующий `POST /chat`;
-
-* отображение ответа;
-
-* отображение источников;
-
-* отображение fallback при отсутствии достаточного контекста;
-
-* сообщение об ошибке при недоступности FastAPI.
-
-UI является тонким presentation layer и не дублирует retrieval или RAG logic.
+---
 
 ## API
 
-### `GET /health`
+Backend реализован на **FastAPI**.
 
-Проверка доступности приложения.
-
-### `POST /chat`
-
-Ответ на вопрос пользователя на основании Knowledge Base.
-
-Request:
-
-```json
-{
-  "query": "Как оформить отпуск?"
-}
-```
-
-Response:
-
-```json
-{
-  "answer": "...",
-  "sources": [
-    {
-      "document_id": "hr-vacation-policy",
-      "title": "Политика отпусков",
-      "source": "HR / Политика отпусков"
-    }
-  ]
-}
-```
-
-Если релевантный контекст отсутствует:
-
-```json
-{
-  "answer": "В базе знаний не найдено достаточно информации для достоверного ответа на этот вопрос.",
-  "sources": []
-}
-```
-
-### `POST /search`
-
-Semantic search по Knowledge Base без генерации ответа LLM.
-
-Request:
-
-```json
-{
-  "query": "Как оформить отпуск?"
-}
-```
-
-Response содержит:
+Основные endpoints:
 
 ```text
-chunk_id
-
-document_id
-
-title
-
-source
-
-content
-
-distance
+GET  /health
+POST /index
+POST /search
+POST /chat
 ```
 
-### `POST /index`
+### `/health`
 
-Индексация документов Knowledge Base.
+Проверка доступности backend.
 
-Endpoint используется для построения и обновления persistent ChromaDB index.
+### `/index`
+
+Запуск indexing pipeline и обновление persistent vector store.
+
+### `/search`
+
+Выполняет Retrieval без вызова LLM.
+
+Используется для:
+
+* демонстрации Retrieval;
+* диагностики;
+* просмотра найденных chunks;
+* подготовки данных для оценки.
+
+### `/chat`
+
+Выполняет полный RAG pipeline и возвращает:
+
+* ответ;
+* источники.
+
+---
+
+## Streamlit UI
+
+Пользовательский интерфейс реализован на **Streamlit**.
+
+UI:
+
+* отправляет запросы в FastAPI;
+* отображает ответ;
+* отображает источники;
+* проверяет пустой запрос;
+* обрабатывает недоступность backend.
+
+Streamlit не содержит собственной RAG-логики.
+
+Вся основная бизнес-логика находится в backend.
+
+---
+
+## Evaluation
+
+Для систематической проверки качества проекта создан отдельный evaluation layer:
+
+```text
+evaluation/
+├── dataset.yaml
+└── README.md
+```
+
+`dataset.yaml` содержит **38 evaluation cases**.
+
+Каждый case содержит контролируемые данные, необходимые для последующей оценки поведения системы.
+
+Evaluation dataset используется для проверки:
+
+* качества Retrieval;
+* соответствия ответа ожидаемому контексту;
+* поведения системы при недостатке информации;
+* покрытия основных сценариев Knowledge Base.
+
+Evaluation не является второй Knowledge Base и не изменяет основной RAG pipeline.
+
+Следующий этап проекта — запуск формальной оценки на текущем baseline и анализ результатов.
+
+---
+
+## Architecture
+
+Проект использует упрощённый вариант **Clean Architecture**.
+
+Основные слои:
+
+```text
+app/
+├── domain/
+├── application/
+├── infrastructure/
+└── api/
+
+ui/
+```
+
+### Domain
+
+Содержит основные модели и абстракции системы.
+
+### Application
+
+Содержит application services и orchestration.
+
+### Infrastructure
+
+Содержит реализации:
+
+* ChromaDB;
+* embeddings;
+* LLM provider;
+* document loaders.
+
+### API
+
+FastAPI endpoints и HTTP layer.
+
+### UI
+
+Streamlit presentation layer.
+
+Подробнее архитектура описана в [`ARCHITECTURE.md`](ARCHITECTURE.md).
+
+---
+
+## Technology Stack
+
+* Python 3.12+
+* FastAPI
+* Streamlit
+* LangChain
+* OpenAI API / OpenAI-compatible API
+* ChromaDB
+* OpenAI Embeddings
+* Pydantic Settings
+* pytest
+* Docker
+* GitHub Actions
+
+Поддерживается работа через OpenAI-compatible provider, включая ProxyAPI, без provider-specific branching в application logic.
+
+---
+
+## Project Structure
+
+```text
+ego-biz-wiki/
+├── app/
+│   ├── api/
+│   ├── application/
+│   ├── domain/
+│   └── infrastructure/
+├── knowledge_base/
+├── evaluation/
+│   ├── dataset.yaml
+│   └── README.md
+├── scripts/
+├── tests/
+├── ui/
+├── docs/
+├── .env.example
+├── ARCHITECTURE.md
+├── PROJECT_STATE.md
+├── README.md
+├── Dockerfile
+└── pyproject.toml
+```
+
+---
 
 ## Testing
 
-Текущий полный test suite:
+Проект покрыт unit и integration tests.
 
-**45 passed, 1 warning**
+Текущее состояние:
 
-Предупреждение относится к `Starlette / AnyIO` и не связано с логикой проекта.
+```text
+45 passed
+1 warning
+```
 
-Дополнительно выполнены реальные API smoke tests.
+Предупреждение связано с deprecated API в зависимости `Starlette/AnyIO` и не является ошибкой проектной логики.
 
-Проверены:
+---
 
-* `GET /health`;
+## Architectural Constraints
 
-* `POST /chat`;
-
-* `POST /search`;
-
-* запуск Streamlit UI;
-
-* взаимодействие Streamlit UI с FastAPI.
-
-Для `POST /search` проверены:
-
-* релевантный запрос `Как оформить отпуск?`;
-
-* нерелевантный запрос `Как заказать домик на Марсе?`;
-
-* корректное возвращение search results;
-
-* корректное возвращение пустого списка результатов;
-
-* отсутствие вызова LLM.
-
-Для `POST /chat` проверены:
-
-* `Как оформить отпуск?`;
-
-* `Как подключиться к VPN?`;
-
-* `Что делать при фишинговом письме?`;
-
-* `Как заказать домик на Марсе?`.
-
-Релевантные вопросы возвращают grounded answers и источники.
-
-Out-of-KB запрос возвращает fallback и пустой список источников.
-
-Для Streamlit UI проверены:
-
-* запуск интерфейса;
-
-* ввод релевантного вопроса;
-
-* получение ответа через FastAPI;
-
-* отображение источников;
-
-* обработка fallback;
-
-* обработка пустого запроса;
-
-* обработка недоступности FastAPI.
-
-## Security
-
-Локальный `.env` не отслеживается Git.
-
-Секреты не должны включаться в Git или logging.
-
-## Что сознательно НЕ реализовано
-
-В текущем MVP не реализованы:
-
-* formal evaluation dataset;
-
-* Document Standardization для разнородных PDF/DOCX/XLSX/HTML/TXT;
+MVP сознательно не использует:
 
 * Agentic RAG;
-
+* agents;
 * LangGraph;
-
 * hybrid search;
-
 * reranking;
-
 * external web search;
-
 * long-term memory;
+* сложную orchestration.
 
-* сложная multi-agent orchestration.
+Эти подходы могут рассматриваться только после появления подтверждённой необходимости и результатов evaluation.
 
-Эти компоненты не добавляются до тех пор, пока они не будут оправданы требованиями MVP и evaluation.
+Главный критерий развития проекта:
+
+> **Сначала измерить проблему — затем усложнять систему.**
+
+---
 
 ## Roadmap
 
-Следующие возможные этапы:
+Ближайший этап:
 
-1. evaluation dataset и формальная оценка качества;
+1. запустить формальную Evaluation;
+2. получить baseline results;
+3. проанализировать ошибки Retrieval и RAG;
+4. определить необходимость изменений;
+5. повторно измерить результат после изменений.
 
-2. Document Standardization для разнородных PDF/DOCX/XLSX/HTML/TXT;
+Возможные дальнейшие направления:
 
-3. дальнейшее улучшение retrieval только на основании результатов evaluation;
+* Retrieval optimization;
+* Document Standardization;
+* поддержка PDF/DOCX/XLSX/HTML/TXT;
+* дополнительные evaluation cases;
+* расширение Knowledge Base.
 
-4. другие расширения MVP только при наличии обоснованных требований.
+Advanced RAG approaches добавляются только при наличии измеренного обоснования.
 
-**Streamlit UI уже реализован в Commit #07 и больше не является частью Roadmap.**
+---
 
-## Главный принцип проекта
+## Project Philosophy
+
+EgoBiz Wiki создаётся как **небольшой, понятный и воспроизводимый рабочий MVP**, а не как максимально сложная AI-система.
+
+Архитектура должна оставаться:
+
+* простой;
+* тестируемой;
+* расширяемой;
+* понятной для сопровождения;
+* достаточной для поставленной задачи.
 
 **SIMPLE, COMPLETE & WORKING MVP > COMPLEX, UNSTABLE PRODUCT**

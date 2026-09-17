@@ -1,508 +1,205 @@
-# СОСТОЯНИЕ ПРОЕКТА – EgoBiz Wiki
+# PROJECT STATE — EgoBiz Wiki
 
 ## 1. Основная информация
 
-* **Проект:** EgoBiz Wiki
-* **Продукт:** AI Business Knowledge Assistant
-* **Репозиторий:** `ego-biz-wiki`
+* **Project:** EgoBiz Wiki
+* **Repository:** `ego-biz-wiki`
 * **GitHub:** `https://github.com/egorover/ego-biz-wiki`
-* **Локальная директория:** `C:\Dev\oss\ego-biz-wiki`
+* **Author:** Александр Егоров / egorover
+* **Project type:** Выпускной проект курса
+* **Product type:** AI Business Knowledge Assistant
+* **Russian:** ИИ-ассистент по корпоративной базе знаний
+* **Local path:** `C:\Dev\oss\ego-biz-wiki`
+* **Current development stage:** Commit #08 — Formal Evaluation Dataset — Completed
 
-**Демо-компания:** EgoTech Solutions
+Демонстрационная компания: **EgoTech Solutions**
 
-**Назначение проекта:**
-ИИ-ассистент по корпоративной базе знаний, который отвечает на вопросы сотрудников на основе контролируемого набора внутренних документов.
-
-Основные области Knowledge Base:
-
-* HR
-* IT
-* Security
-* Operations
-* Customer Operations
-* FAQ
-* Technical Documentation
-* Business Travel
+Назначение продукта: отвечать на вопросы сотрудников на основе контролируемой корпоративной базы знаний с использованием RAG.
 
 ---
 
-# 2. Главный принцип проекта
+## 2. Главный принцип проекта
 
-> **SIMPLE, COMPLETE & WORKING MVP > COMPLEX, UNSTABLE PRODUCT**
+**SIMPLE, COMPLETE & WORKING MVP > COMPLEX, UNSTABLE PRODUCT**
 
-Главный приоритет проекта:
+Сначала создаётся простой, самодостаточный и стабильно работающий MVP.
 
-1. Надёжность
-2. Простота
-3. Полнота MVP
-4. Тестируемость
-5. Поддерживаемость
-6. Расширяемость
-
-Правила:
-
-* не добавлять сложность без необходимости;
-* не использовать технологии только ради демонстрации современности;
-* не усложнять архитектуру ради архитектуры;
-* каждая новая возможность должна быть обоснована потребностями MVP;
-* всё реализованное должно быть протестировано;
-* функциональность, не требуемая MVP, переносится в Roadmap.
-
-Если простое решение надёжно закрывает задачу MVP — используется простое решение.
+Дополнительная функциональность, усложнение архитектуры и advanced-подходы переносятся в Roadmap и добавляются только после проверки необходимости.
 
 ---
 
-# 3. Языковые правила
+## 3. Языковые правила
 
-Основной язык проекта и взаимодействия — **русский**.
+Основной язык проекта и документации — русский.
 
-## На русском языке
-
-* наше общение;
-* Transfer Prompt;
-* README;
-* PROJECT_STATE;
-* документация `docs/`;
-* архитектурные описания;
-* технические объяснения;
-* пользовательский интерфейс;
-* бизнес-контент;
-* ответы AI.
-
-## На английском языке
+Английский используется там, где это технически необходимо или соответствует принятому техническому стандарту:
 
 * имена файлов;
 * имена директорий;
-* имена классов;
-* имена функций;
-* имена переменных;
-* Python comments;
-* Python docstrings;
+* Python identifiers;
 * API endpoints;
-* названия библиотек и технологий;
-* Git commit messages;
-* технические идентификаторы.
+* названия библиотек;
+* названия технологий;
+* технические термины;
+* Git commit messages.
 
-Не следует без необходимости оформлять русскоязычные инструкции, разделы или пользовательский интерфейс на английском языке.
-
----
-
-# 4. Методология разработки
-
-Главное правило:
-
-> **ONE CHAT = ONE COMPLETED GIT COMMIT**
-
-Один рабочий чат посвящён одной законченной Git-задаче.
-
-После каждого Commit:
-
-1. Реализовать задачу.
-2. Запустить тесты.
-3. Проверить фактическое поведение.
-4. Проверить структуру проекта.
-5. Проверить документацию.
-6. Обновить `PROJECT_STATE.md`.
-7. Проверить Git status.
-8. Создать backup.
-9. Зафиксировать точное состояние.
-10. Подготовить Transfer Prompt для следующего этапа.
-11. Остановиться.
-
-**Не переходить автоматически к следующему Commit.**
-
-Следующий Commit начинается только в новом чате после передачи контекста.
+Пользовательская документация, пояснения, UI и ответы AI должны быть преимущественно на русском языке.
 
 ---
 
-# 5. История проекта
+## 4. Методология разработки
 
-## Commit #01 — Project Foundation
+Разработка выполняется поэтапно.
 
-**Статус:** завершён.
+Основное правило:
 
-Commit:
+**Один чат = один завершённый Git commit.**
 
-```text
-ba97e70 feat: establish project foundation
-```
+Каждый commit должен:
 
-Создан фундамент проекта:
+1. решать одну конкретную задачу;
+2. быть проверен;
+3. иметь обновлённую документацию;
+4. быть зафиксирован в Git;
+5. быть отправлен в GitHub;
+6. иметь проверенное состояние рабочего дерева.
 
-* структура приложения;
-* базовая конфигурация;
-* Pydantic Settings;
-* `.env` / `.env.example`;
-* базовые domain/application/infrastructure слои;
-* FastAPI application;
-* health endpoint;
-* тестовая инфраструктура;
-* базовая документация;
-* Git workflow.
+После завершения commit дальнейшая разработка в текущем чате не продолжается.
+
+Перед переходом к следующему commit создаётся backup и подготавливается Transfer Prompt.
 
 ---
 
-## Commit #02 — Knowledge Base
+## 5. Текущее состояние проекта
 
-**Статус:** завершён.
+Commit #08 завершает этап создания формальной базы для оценки качества RAG.
 
-Commit:
+На текущем этапе проект имеет:
 
-```text
-9bc1f68 feat: add knowledge base
-```
+* контролируемую корпоративную Knowledge Base;
+* pipeline индексации документов;
+* persistent ChromaDB index;
+* семантический Retrieval;
+* distance threshold;
+* RAG pipeline с LLM;
+* deterministic fallback при отсутствии достаточного контекста;
+* API `/health`;
+* API `/search`;
+* API `/chat`;
+* Streamlit UI;
+* формальный evaluation dataset;
+* документацию по основным подсистемам;
+* unit и integration tests.
 
-Реализована контролируемая Knowledge Base.
-
-Созданы:
-
-* 23 Markdown-документа;
-* `knowledge_base/manifest.yaml`;
-* единая структура metadata;
-* единообразный формат документов;
-* документы по HR, IT, Security, Operations, Customer Operations, FAQ и другим областям.
-
-Количество Markdown-документов:
-
-```text
-23
-```
-
----
-
-## Commit #03 — Indexing
-
-**Статус:** завершён.
-
-Основной Commit:
-
-```text
-2f6c089 feat: implement knowledge base indexing
-```
-
-Документационный Commit:
-
-```text
-b627e32 docs: update README for commit 03
-```
-
-Реализован indexing pipeline:
+Основная функциональная цепочка:
 
 ```text
 Knowledge Base
       ↓
-manifest.yaml
+   Indexing
       ↓
-Document loading
-      ↓
-Metadata
-      ↓
-Chunking
-      ↓
-Embeddings
-      ↓
-ChromaDB
+   Retrieval
+    ↙     ↘
+/search   /chat
+   ↓        ↓
+ Chunks    RAG
+             ↓
+       Answer + Sources
 ```
 
-Основные возможности:
-
-* загрузка документов через `manifest.yaml`;
-* сохранение document metadata;
-* token-aware chunking;
-* embeddings через OpenAI-compatible API;
-* поддержка ProxyAPI;
-* persistent ChromaDB;
-* коллекция `ego_biz_wiki`;
-* детерминированные `chunk_id`;
-* повторный indexing через upsert;
-* отсутствие логических дубликатов;
-* CLI entrypoint:
-  `scripts/index_knowledge_base.py`;
-* документация:
-  `docs/INDEXING.md`;
-* unit и integration tests.
-
-Параметры:
-
-```text
-chunk_size = 800
-chunk_overlap = 120
-embedding_model = text-embedding-3-small
-vector_store = ChromaDB
-```
-
-Результат реального indexing:
-
-```text
-Documents loaded: 23
-Chunks created: 23
-Embeddings API response: HTTP 200 OK
-Chroma collection: ego_biz_wiki
-Chroma records: 23
-```
-
-После повторного indexing:
-
-```text
-Chroma records: 23
-```
-
-Повторный запуск не создаёт дубликаты логических chunks.
+Evaluation используется как отдельный слой проверки качества и не изменяет основной RAG pipeline.
 
 ---
 
-## Commit #04 — Retrieval
+## 6. Архитектура и ключевые решения
 
-**Статус:** завершён.
-
-Основной Commit:
+Проект использует упрощённый вариант Clean Architecture с разделением ответственности:
 
 ```text
-263c209 feat: implement retrieval
+app/
+├── domain/
+├── application/
+├── infrastructure/
+└── api/
+
+ui/
 ```
 
-Документационный Commit:
+Основные слои:
 
-```text
-52e943a docs: update README for retrieval
-```
+* **Domain** — бизнес-модели и абстракции;
+* **Application** — orchestration и application services;
+* **Infrastructure** — ChromaDB, embeddings, LLM и загрузка документов;
+* **API** — FastAPI endpoints;
+* **UI** — Streamlit presentation layer.
 
-Реализован `RetrievalService`.
+Application layer не должен зависеть от конкретной реализации provider.
 
-Pipeline:
+Для внешних компонентов используются абстракции/Protocols, позволяющие изолировать application logic от конкретных SDK.
+
+Streamlit является тонким UI-слоем и взаимодействует с backend через HTTP. RAG-логика в UI не дублируется.
+
+Не следует создавать второй механизм Retrieval для отдельных API или evaluation-задач.
+
+---
+
+## 7. RAG и Retrieval
+
+### Retrieval
+
+Retrieval выполняет:
 
 ```text
 User Query
     ↓
 Query Embedding
     ↓
-Chroma Similarity Search
+ChromaDB Similarity Search
     ↓
-Top-K Results
+Top-K
     ↓
-Chunks + Metadata + Source
+Distance Threshold
+    ↓
+Retrieved Chunks
 ```
-
-Реализовано:
-
-* query validation;
-* query embedding;
-* semantic similarity search;
-* configurable `top_k`;
-* configurable distance threshold;
-* domain-level `RetrievedChunk`;
-* metadata preservation;
-* source attribution;
-* empty-result handling;
-* ordering результатов;
-* Chroma adapter;
-* unit tests;
-* integration tests;
-* real retrieval smoke tests;
-* out-of-KB test.
 
 Текущие параметры:
 
 ```text
-RETRIEVAL_TOP_K=5
-RETRIEVAL_SCORE_THRESHOLD=1.30
+chunk_size = 800
+chunk_overlap = 120
+
+embedding model = text-embedding-3-small
+
+RETRIEVAL_TOP_K = 5
+RETRIEVAL_SCORE_THRESHOLD = 1.30
 ```
 
-Используется distance threshold.
+Используется Chroma `distance`. Меньшее значение означает более близкое векторное соответствие.
 
-Проверенные запросы:
+Threshold является текущим MVP baseline. Он не считается окончательно оптимальным и должен оцениваться на формальном evaluation dataset.
 
-```text
-Как оформить отпуск?
-Как подключиться к VPN?
-Что делать при фишинговом письме?
-```
+### RAG
 
-Для них находятся релевантные результаты.
-
-Out-of-KB:
+Основная цепочка `/chat`:
 
 ```text
-Как заказать домик на Марсе?
-```
-
-Релевантные результаты не возвращаются.
-
----
-
-# 6. Commit #05 — RAG Pipeline
-
-**Статус:** завершён.
-
-Основной Commit:
-
-```text
-da7c11c feat: implement rag pipeline
-```
-
-Реализован базовый полноценный RAG pipeline:
-
-```text
-Вопрос пользователя
-        ↓
+User Query
+    ↓
 RetrievalService
-        ↓
-Найденные фрагменты
-        ↓
+    ↓
+Relevant Chunks
+    ↓
 RAGService
-        ↓
+    ↓
 OpenAI-compatible LLM
-        ↓
-Ответ + источники
+    ↓
+Answer + Sources
 ```
 
-Основные компоненты:
+Если после Retrieval и threshold filtering релевантных фрагментов нет, LLM не вызывается.
 
-```text
-app/application/rag/service.py
-app/domain/rag.py
-app/infrastructure/llm/openai.py
-app/infrastructure/rag.py
-app/api/dependencies.py
-app/api/routes/chat.py
-app/api/schemas/chat.py
-```
-
-Реализовано:
-
-* получение пользовательского запроса;
-* retrieval;
-* формирование context;
-* LLM generation;
-* ответ пользователю;
-* source attribution;
-* fallback при недостатке информации;
-* обработка пустого ответа LLM;
-* уникализация источников;
-* dependency wiring через FastAPI.
-
----
-
-# 7. Commit #06 — API поиска
-
-**Статус:** завершён.
-
-Основной Commit:
-
-```text
-7dff25b feat: implement search endpoint
-```
-
-Документационный Commit:
-
-```text
-a2b24d2 docs: update project state and readme after commit 06
-```
-
-Добавлен отдельный API endpoint:
-
-```text
-POST /search
-```
-
-Назначение:
-
-* выполнять semantic retrieval;
-* возвращать найденные chunks;
-* возвращать distance;
-* возвращать metadata;
-* возвращать source information;
-* не генерировать финальный LLM-ответ.
-
-Текущий API:
-
-```text
-GET  /health
-POST /chat
-POST /search
-POST /index
-```
-
----
-
-# 8. Текущая архитектура backend
-
-Основная архитектура:
-
-```text
-FastAPI
-   ↓
-API Routes
-   ↓
-Application Services
-   ↓
-Domain Models
-   ↓
-Infrastructure Adapters
-   ↓
-ChromaDB / OpenAI-compatible API
-```
-
-Основные слои:
-
-```text
-app/
-├── api/
-├── application/
-├── domain/
-└── infrastructure/
-```
-
-Domain-модели не должны зависеть от:
-
-* ChromaDB;
-* LangChain;
-* конкретного provider SDK;
-* FastAPI.
-
-Application layer отвечает за orchestration.
-
-Infrastructure layer отвечает за конкретные внешние технологии.
-
----
-
-# 9. Текущая RAG-логика
-
-`RAGService` получает пользовательский запрос и выполняет:
-
-```text
-query
-  ↓
-RetrievalService
-  ↓
-retrieved chunks
-  ↓
-если chunks отсутствуют
-  ↓
-fallback
-```
-
-Если релевантные chunks найдены:
-
-```text
-query
-  +
-retrieved context
-  ↓
-LLM
-  ↓
-answer
-  +
-sources
-```
-
-Источники формируются на основе metadata найденных документов.
-
----
-
-# 10. Fallback
-
-При отсутствии достаточной информации используется **точно заданный текст**:
+Используется точный fallback:
 
 ```text
 В базе знаний не найдено достаточно информации для достоверного ответа на этот вопрос.
@@ -514,62 +211,116 @@ sources
 sources = []
 ```
 
-Fallback не должен:
+Текущая реализация намеренно не включает:
 
-* генерироваться LLM;
-* изменяться UI;
-* заменяться альтернативным текстом;
-* смешиваться с retrieval logic.
-
----
-
-# 11. Retrieval configuration
-
-Текущие параметры:
-
-```text
-RETRIEVAL_TOP_K=5
-RETRIEVAL_SCORE_THRESHOLD=1.30
-```
-
-Chunking:
-
-```text
-CHUNK_SIZE=800
-CHUNK_OVERLAP=120
-```
-
-Embedding model:
-
-```text
-text-embedding-3-small
-```
-
-LLM:
-
-```text
-gpt-4o-mini
-```
-
-Vector store:
-
-```text
-ChromaDB
-```
-
-Collection:
-
-```text
-ego_biz_wiki
-```
-
-Параметры являются конфигурируемыми и не должны быть без необходимости захардкожены в application code.
+* Agentic RAG;
+* agents;
+* LangGraph;
+* hybrid search;
+* reranking;
+* external web search;
+* long-term memory;
+* сложную orchestration.
 
 ---
 
-# 12. Источники и metadata
+## 8. API и UI
 
-Минимальная metadata strategy:
+### API
+
+Реализованы следующие endpoints:
+
+```text
+GET  /health
+POST /index
+POST /search
+POST /chat
+```
+
+### `/health`
+
+Проверяет доступность и работоспособность backend.
+
+### `/index`
+
+Запускает indexing pipeline для Knowledge Base и обновления persistent ChromaDB index.
+
+### `/search`
+
+Выполняет Retrieval без вызова LLM.
+
+Назначение:
+
+* демонстрация Retrieval отдельно от RAG;
+* отладка;
+* проверка найденных chunks;
+* подготовка данных для оценки качества.
+
+Результат содержит информацию о найденных фрагментах, включая:
+
+```text
+chunk_id
+document_id
+title
+source
+content
+distance
+```
+
+### `/chat`
+
+Выполняет полный RAG pipeline и возвращает:
+
+```text
+answer
+sources
+```
+
+### Streamlit UI
+
+UI реализован как отдельный тонкий слой.
+
+Основные свойства:
+
+* отправляет запросы в FastAPI;
+* отображает ответ и источники;
+* валидирует пустой запрос на стороне UI;
+* обрабатывает недоступность backend;
+* не содержит собственной RAG-логики.
+
+Адрес backend передаётся через:
+
+```text
+STREAMLIT_API_URL
+```
+
+---
+
+## 9. Knowledge Base
+
+Демонстрационная база знаний принадлежит компании **EgoTech Solutions**.
+
+Текущий формат — нормализованные Markdown-документы с единообразной структурой.
+
+В Knowledge Base:
+
+```text
+23 Markdown documents
+manifest.yaml
+```
+
+Основные категории:
+
+* `customer_operations`
+* `faq`
+* `hr`
+* `it`
+* `operations`
+* `security`
+
+Документы описываются через `manifest.yaml`.
+
+Для chunks сохраняются основные метаданные документа:
 
 ```text
 document_id
@@ -581,298 +332,60 @@ subcategory
 updated_at
 ```
 
-Для retrieved chunk дополнительно доступны:
+Нормализованный формат документов является сознательным решением MVP и представляет собой **наш идеальный документооборот**.
 
-```text
-chunk_id
-content
-distance
-metadata
-source
-```
+Это не утверждение о том, что реальные корпоративные документы всегда имеют такую структуру.
 
-`RetrievedChunk` является domain-level представлением результата retrieval.
-
-Raw Chroma objects не должны передаваться в Application или API layer.
+Автоматическая стандартизация разнородных документов является отдельной будущей возможностью Roadmap.
 
 ---
 
-# 13. Commit #07 — Streamlit UI
+## 10. Evaluation
 
-**Текущий рабочий этап:** Commit #07 — Streamlit UI
+Commit #08 добавляет формальный evaluation dataset для систематической оценки качества RAG.
 
-**Статус:**
-
-> **РЕАЛИЗОВАН — ПРОТЕСТИРОВАН — ГОТОВ К COMMIT**
-
-Цель Commit #07:
-
-Добавить минимальный presentation-ready пользовательский интерфейс для работы с уже существующим `/chat`.
-
-Архитектура:
+Основные файлы:
 
 ```text
-Streamlit UI
-     ↓ HTTP
-FastAPI POST /chat
-     ↓
-RAGService
-     ↓
-RetrievalService
-     ↓
-ChromaDB
-     ↓
-LLM
-     ↓
-answer + sources
-     ↓
-Streamlit UI
+evaluation/
+├── dataset.yaml
+└── README.md
 ```
 
-Streamlit **не обращается напрямую** к:
+Текущий dataset:
 
-* ChromaDB;
-* RetrievalService;
-* RAGService;
-* LLM.
+* **38 evaluation cases**;
+* уникальные идентификаторы кейсов;
+* покрытие существующей Knowledge Base;
+* ожидаемые результаты и ссылки на соответствующие документы используются как основа для последующей оценки Retrieval/RAG.
 
-UI не дублирует backend business logic.
+`evaluation/dataset.yaml` является машинно-читаемым источником evaluation cases.
+
+`evaluation/README.md` описывает назначение, структуру и правила работы с dataset.
+
+Важно:
+
+**Evaluation dataset не является второй Knowledge Base.**
+
+Он используется исключительно для контролируемой проверки поведения существующего RAG pipeline.
+
+Commit #08 создаёт формальную основу для измерения качества. Оптимизация Retrieval не выполняется автоматически только из-за появления dataset.
 
 ---
 
-# 14. Реализация Streamlit UI
+## 11. Тестирование и верификация
 
-Добавлен файл:
+На текущем состоянии проекта:
 
 ```text
-ui/streamlit_app.py
+45 passed
+1 warning
 ```
 
-Используются:
+Команда:
 
-```text
-streamlit
-requests
-python-dotenv
-```
-
-UI содержит:
-
-* название компании;
-* название продукта;
-* поле вопроса;
-* кнопку отправки;
-* отображение ответа;
-* отображение источников;
-* fallback;
-* обработку пустого вопроса;
-* обработку ошибки подключения к FastAPI.
-
-Заголовок:
-
-```text
-EgoTech Solutions
-```
-
-Подзаголовок:
-
-```text
-EgoBiz Wiki — ИИ-ассистент по корпоративной базе знаний
-```
-
-Поле:
-
-```text
-Ваш вопрос
-```
-
-Кнопка:
-
-```text
-Задать вопрос
-```
-
----
-
-# 15. Конфигурация Streamlit
-
-В `.env.example` добавлена:
-
-```text
-STREAMLIT_API_URL=http://127.0.0.1:8000
-```
-
-UI получает API URL через environment configuration.
-
-Значение по умолчанию:
-
-```text
-http://127.0.0.1:8000
-```
-
-Streamlit-specific configuration не добавляется в backend `Settings`, поскольку относится непосредственно к UI.
-
----
-
-# 16. Зависимости Commit #07
-
-В `pyproject.toml` добавлены:
-
-```text
-streamlit>=1.48,<2.0
-requests>=2.32,<3.0
-```
-
-После изменения зависимостей выполнено:
-
-```text
-python -m pip install -e .
-```
-
-Streamlit установлен и импортируется успешно.
-
-Проверенная версия:
-
-```text
-Streamlit 1.64.0
-```
-
----
-
-# 17. Проверки Commit #07
-
-## Проверка синтаксиса
-
-Выполнено:
-
-```text
-python -m compileall .\ui\streamlit_app.py
-```
-
-Результат:
-
-```text
-успешно
-```
-
----
-
-## Запуск FastAPI
-
-FastAPI запущен на:
-
-```text
-http://127.0.0.1:8000
-```
-
-API отвечает корректно.
-
----
-
-## Запуск Streamlit
-
-Streamlit запущен на:
-
-```text
-http://localhost:8501
-```
-
-UI открывается корректно.
-
----
-
-# 18. UI-тест — релевантный вопрос
-
-Проверен вопрос:
-
-```text
-Как подключиться к корпоративному VPN?
-```
-
-Получен содержательный ответ из Knowledge Base.
-
-UI корректно отображает:
-
-```text
-Ответ
-```
-
-и список:
-
-```text
-Источники
-```
-
----
-
-# 19. UI-тест — пустой вопрос
-
-Проверено нажатие кнопки без пользовательского запроса.
-
-Получено:
-
-```text
-Введите вопрос.
-```
-
-Backend при этом не вызывается.
-
----
-
-# 20. UI-тест — вопрос вне Knowledge Base
-
-Проверен запрос:
-
-```text
-Какой сегодня курс биткоина?
-```
-
-Получен точный fallback:
-
-```text
-В базе знаний не найдено достаточно информации для достоверного ответа на этот вопрос.
-```
-
-Источники не отображаются:
-
-```text
-sources = []
-```
-
-Это соответствует логике MVP.
-
----
-
-# 21. UI-тест — ошибка backend
-
-Проверена ситуация недоступного FastAPI.
-
-UI корректно отображает:
-
-```text
-Не удалось получить ответ от API. Убедитесь, что FastAPI запущен.
-```
-
-Дополнительно отображается техническая информация об ошибке подключения.
-
-После теста configuration была восстановлена.
-
-Обычный режим:
-
-```text
-STREAMLIT_API_URL=http://127.0.0.1:8000
-```
-
-повторно проверен.
-
----
-
-# 22. Полный test suite
-
-После реализации Commit #07 выполнено:
-
-```text
-pytest
+```powershell
+pytest -q
 ```
 
 Результат:
@@ -881,525 +394,220 @@ pytest
 45 passed, 1 warning
 ```
 
-Предупреждение относится к внешней зависимости:
+Warning относится к внешней зависимости Starlette/AnyIO и имеет характер `DeprecationWarning`.
+
+Это не является ошибкой проектной логики.
+
+Кроме автоматических тестов, для основных пользовательских сценариев используются ручные smoke-проверки.
+
+### Релевантный запрос
+
+Пример:
 
 ```text
-Starlette / AnyIO
+Как оформить отпуск?
 ```
 
-и не связано с логикой проекта.
+Ожидается:
+
+* релевантный контекст;
+* grounded answer;
+* корректные источники.
+
+### Нерелевантный запрос
+
+Пример:
+
+```text
+Как заказать домик на Марсе?
+```
+
+При текущем threshold ожидается отсутствие достаточного Retrieval context и срабатывание deterministic fallback без вызова LLM.
+
+### UI
+
+Проверены:
+
+* пустой запрос;
+* успешный запрос;
+* отображение результата;
+* обработка недоступного backend.
 
 ---
 
-# 23. Проверка линтера
+## 12. Структура проекта
 
-Попытка выполнить:
-
-```text
-ruff check .\ui\streamlit_app.py
-```
-
-показала, что `ruff` не установлен в текущем `.venv`.
-
-Также:
-
-```text
-python -m ruff check .\ui\streamlit_app.py
-```
-
-не выполнена, поскольку пакет `ruff` отсутствует.
-
-Принято решение:
-
-**не добавлять Ruff в runtime dependencies проекта только ради локальной проверки Commit #07.**
-
-Это не является функциональной ошибкой проекта.
-
----
-
-# 24. Текущая структура проекта
-
-Основная структура:
+Ключевая структура:
 
 ```text
 ego-biz-wiki/
-│
 ├── app/
-│   ├── __init__.py
-│   ├── main.py
-│   │
 │   ├── api/
-│   │   ├── dependencies.py
-│   │   ├── routes/
-│   │   │   ├── __init__.py
-│   │   │   ├── chat.py
-│   │   │   ├── health.py
-│   │   │   └── search.py
-│   │   │
-│   │   └── schemas/
-│   │       ├── __init__.py
-│   │       ├── chat.py
-│   │       ├── health.py
-│   │       └── search.py
-│   │
 │   ├── application/
-│   │   ├── indexing/
-│   │   │   └── service.py
-│   │   ├── rag/
-│   │   │   └── service.py
-│   │   └── retrieval/
-│   │       └── service.py
-│   │
 │   ├── domain/
-│   │   ├── chunk.py
-│   │   ├── document.py
-│   │   ├── rag.py
-│   │   └── retrieval.py
-│   │
 │   └── infrastructure/
-│       ├── rag.py
-│       ├── config/
-│       │   └── settings.py
-│       ├── embeddings/
-│       │   └── openai.py
-│       ├── indexing/
-│       │   ├── chunker.py
-│       │   └── manifest.py
-│       ├── llm/
-│       │   └── openai.py
-│       ├── loaders/
-│       │   └── markdown.py
-│       └── vector_store/
-│           └── chroma.py
-│
+├── evaluation/
+│   ├── dataset.yaml
+│   └── README.md
 ├── knowledge_base/
-│   ├── *.md
-│   └── manifest.yaml
-│
 ├── scripts/
-│   └── index_knowledge_base.py
-│
 ├── tests/
-│
-├── docs/
-│
 ├── ui/
-│   └── streamlit_app.py
-│
-├── .chroma/
-├── backup/
-│
-├── .env
+├── docs/
 ├── .env.example
-├── .gitignore
-├── pyproject.toml
+├── Dockerfile
 ├── README.md
-└── PROJECT_STATE.md
+├── PROJECT_STATE.md
+└── pyproject.toml
+```
+
+Ключевые подсистемы:
+
+```text
+app/application/indexing/
+app/application/retrieval/
+app/application/rag/
+app/infrastructure/vector_store/
+app/infrastructure/embeddings/
+app/infrastructure/llm/
+app/api/
+ui/
+evaluation/
 ```
 
 ---
 
-# 25. Knowledge Base — архитектурное решение
+## 13. История commits
 
-Для MVP сознательно используется стандартизированный внутренний формат:
+| Commit | Назначение                | Статус    |
+| ------ | ------------------------- | --------- |
+| #01    | Project Foundation        | Completed |
+| #02    | Knowledge Base            | Completed |
+| #03    | Indexing                  | Completed |
+| #04    | Retrieval                 | Completed |
+| #05    | RAG Pipeline              | Completed |
+| #06    | API Search                | Completed |
+| #07    | Streamlit UI              | Completed |
+| #08    | Formal Evaluation Dataset | Completed |
 
-* Markdown;
-* English `snake_case` для технических имён;
-* русский бизнес-контент;
-* единый `manifest.yaml`;
-* единая metadata strategy;
-* единообразная структура документов.
-
-Это является:
-
-> **нашим идеальным документооборотом**
-
-То есть нормализованным внутренним форматом демонстрационного MVP.
-
-Это **не утверждение**, что реальные корпоративные документы всегда организованы таким образом.
+Основная история разработки соответствует последовательному расширению одного MVP без создания параллельных архитектурных решений.
 
 ---
 
-# 26. Document Standardization
+## 14. Известные ограничения
 
-Автоматическая стандартизация разнородных корпоративных документов **не входит в текущий MVP**.
+Текущий проект является демонстрационным MVP и не позиционируется как полноценная production enterprise-платформа.
 
-В будущем Roadmap предусмотрена feature:
+Текущие ограничения:
 
-```text
-Document Standardization
-```
+* контролируемая локальная Knowledge Base;
+* основной документный формат MVP — Markdown;
+* Retrieval основан на vector similarity search;
+* используется фиксированный MVP `top-k`;
+* threshold пока является baseline;
+* нет hybrid search;
+* нет reranking;
+* нет Agentic RAG;
+* нет external web search;
+* нет long-term conversation memory;
+* нет автоматической стандартизации произвольных форматов документов;
+* evaluation dataset предназначен для MVP-оценки и может расширяться.
 
-Она должна рассматривать обработку различных форматов, например:
-
-```text
-PDF
-DOCX
-XLSX
-HTML
-TXT
-```
-
-и других источников с последующим приведением их к единому внутреннему представлению Knowledge Base.
-
----
-
-# 27. Безопасность
-
-API key хранится только во внешнем:
-
-```text
-.env
-```
-
-`.env` не отслеживается Git.
-
-Проверка:
-
-```text
-git check-ignore .env
-```
-
-ожидаемый результат:
-
-```text
-.env
-```
-
-Секреты:
-
-* не должны попадать в Git;
-* не должны попадать в README;
-* не должны попадать в PROJECT_STATE;
-* не должны логироваться;
-* не должны попадать в тестовые fixtures.
-
-`.env.example` содержит только безопасные шаблонные значения.
+Любое изменение Retrieval должно быть обосновано результатами evaluation, а не только предположением о возможном улучшении.
 
 ---
 
-# 28. Что сознательно НЕ реализуется в текущем MVP
+## 15. Roadmap
 
-Не добавлять без отдельного обоснования:
+### Ближайшее направление
 
-* Agentic RAG;
-* agents;
-* LangGraph;
-* hybrid search;
-* reranking;
-* web search;
-* long-term memory;
-* сложное conversation state;
-* WebSocket;
-* streaming;
-* React;
-* отдельный frontend server;
-* authentication;
-* chat-history database;
-* сложную orchestration layer;
-* дополнительные vector databases;
-* ненужные abstraction layers.
+Анализ результатов формальной оценки и проверка качества текущего Retrieval baseline.
 
-Принцип:
+### Следующие возможные направления
 
-> Если возможность не требуется для демонстрации надёжного MVP — она остаётся в Roadmap.
+1. Анализ evaluation results.
+2. Проверка необходимости изменения `top-k` и `RETRIEVAL_SCORE_THRESHOLD`.
+3. Итеративное улучшение Retrieval только при наличии подтверждённой проблемы.
+4. Document Standardization для разнородных форматов:
+
+   * PDF;
+   * DOCX;
+   * XLSX;
+   * HTML;
+   * TXT;
+   * другие форматы.
+
+Advanced-подходы не добавляются без подтверждённой необходимости.
 
 ---
 
-# 29. Ограничения текущего MVP
+## 16. Следующий шаг
 
-Текущий проект рассчитан на:
+**Следующий этап: анализ результатов Evaluation.**
 
-* контролируемую Knowledge Base;
-* небольшой объём документов;
-* классический RAG;
-* один пользовательский запрос за раз;
-* текущий chat context без долгосрочной памяти;
-* локальный ChromaDB;
-* OpenAI-compatible LLM/Embedding API;
-* минимальный Streamlit интерфейс.
+Перед изменением Retrieval необходимо:
 
-Параметры retrieval и chunking пока являются рабочими настройками MVP и должны быть дополнительно подтверждены evaluation.
+1. запустить формальную оценку на текущем baseline;
+2. зафиксировать результаты;
+3. определить обнаруженные ошибки;
+4. классифицировать причины ошибок;
+5. только после этого принять решение о необходимости изменений.
 
----
-
-# 30. Evaluation
-
-Следующим значимым этапом после завершения Commit #07 является:
-
-## Commit #08 — Formal Evaluation Dataset
-
-Цель:
-
-Создать формальный evaluation dataset для объективной проверки качества:
-
-* retrieval;
-* RAG;
-* fallback;
-* source attribution;
-* типовых пользовательских вопросов.
-
-Целевой размер:
-
-```text
-30–40 evaluation cases
-```
-
-Dataset должен включать:
-
-* релевантные вопросы;
-* вопросы с однозначным ответом;
-* вопросы по разным категориям Knowledge Base;
-* out-of-KB вопросы;
-* потенциально неоднозначные вопросы;
-* ожидаемые источники/темы;
-* ожидаемое поведение системы.
-
-После формирования dataset необходимо оценить качество существующего простого RAG **до добавления дополнительной сложности**.
+Если текущие метрики показывают достаточное качество для MVP, Retrieval не усложняется.
 
 ---
 
-# 31. Roadmap после MVP
+## 17. Git state
 
-Возможные будущие направления:
-
-### Document Standardization
-
-Автоматическая обработка:
+Последний опубликованный commit перед фиксацией Commit #08:
 
 ```text
-PDF
-DOCX
-XLSX
-HTML
-TXT
+db49c25 feat: add Streamlit UI
 ```
 
-и других форматов.
-
-### Улучшение Retrieval
-
-Только после подтверждения необходимости evaluation:
-
-* hybrid search;
-* reranking;
-* дополнительные retrieval strategies.
-
-### Расширение памяти
-
-* conversation history;
-* long-term memory.
-
-### Расширение интерфейса
-
-* более полноценный chat UI;
-* streaming;
-* дополнительные пользовательские возможности.
-
-### Production capabilities
-
-* authentication;
-* access control;
-* monitoring;
-* audit;
-* deployment infrastructure.
-
-Все перечисленное является Roadmap, а не обязательной частью текущего MVP.
-
----
-
-# 32. Git State
-
-Последний завершённый Commit:
+Текущая ветка:
 
 ```text
-a2b24d2 docs: update project state and readme after commit 06
+main
 ```
 
-На момент подготовки Commit #07:
+Remote:
 
 ```text
-HEAD = a2b24d2
-origin/main = a2b24d2
+origin
+https://github.com/egorover/ego-biz-wiki.git
 ```
 
-Текущие изменения:
+На момент подготовки Commit #08:
 
 ```text
-M  .env.example
-M  pyproject.toml
-?? ui/
-?? PROJECT_STATE.md.backup
+HEAD -> main
+origin/main -> main
 ```
 
-`PROJECT_STATE.md.backup` является локальным backup и **не должен включаться в Commit #07**.
-
-Commit #07 ещё не создан.
-
-Планируемый Git commit message:
+Изменения Commit #08:
 
 ```text
-feat: implement streamlit ui
+evaluation/README.md
+evaluation/dataset.yaml
+PROJECT_STATE.md
 ```
 
----
+Состояние после подготовки документа должно быть проверено командами:
 
-# 33. Backup policy
-
-Backup создаётся перед переходом к следующему этапу.
-
-Текущий локальный backup:
-
-```text
-PROJECT_STATE.md.backup
-```
-
-Backup-файлы не должны случайно попадать в Git commit.
-
-После завершения Commit #07 необходимо создать финальный backup текущего состояния перед переходом в новый чат.
-
----
-
-# 34. Финальный workflow Commit #07
-
-Перед завершением текущего этапа:
-
-```text
-VERIFY
-   ↓
-UPDATE PROJECT_STATE
-   ↓
-VERIFY PROJECT_STATE
-   ↓
-UPDATE README
-   ↓
-VERIFY README
-   ↓
+```powershell
 git diff --check
-   ↓
+pytest -q
 git status
-   ↓
-git add только файлов Commit #07
-   ↓
-git commit
-   ↓
-git push
-   ↓
-VERIFY GitHub / origin
-   ↓
-VERIFY clean working tree
-   ↓
-CREATE BACKUP
-   ↓
-UPDATE PROJECT_STATE с фактическим commit hash
-   ↓
-VERIFY PROJECT_STATE
-   ↓
-PREPARE TRANSFER PROMPT
-   ↓
-STOP
 ```
 
----
+После успешной проверки изменения Commit #08 фиксируются одним Git commit и отправляются в `origin/main`.
 
-# 35. Completion checklist — Commit #07
-
-## Реализация
-
-* [x] Streamlit dependency added
-* [x] Requests dependency added
-* [x] `ui/` created
-* [x] `ui/streamlit_app.py` created
-* [x] API URL configuration added
-* [x] UI title configured
-* [x] User question input implemented
-* [x] `/chat` integration implemented
-* [x] Answer display implemented
-* [x] Sources display implemented
-* [x] Empty input handling implemented
-* [x] Fallback behavior verified
-* [x] Backend error handling verified
-
-## Проверка
-
-* [x] Streamlit starts
-* [x] FastAPI starts
-* [x] UI opens
-* [x] Normal question tested
-* [x] Empty question tested
-* [x] Out-of-KB question tested
-* [x] Backend error tested
-* [x] Normal configuration restored
-* [x] Full pytest suite passed
-
-## Tests
+После push необходимо убедиться, что:
 
 ```text
-45 passed, 1 warning
+HEAD == origin/main
+working tree clean
 ```
 
-## Документация
-
-* [ ] `PROJECT_STATE.md` updated
-* [ ] `README.md` updated
-* [ ] documentation verified
-
-## Git
-
-* [ ] `git diff --check`
-* [ ] `git status` verified
-* [ ] Commit #07 created
-* [ ] Commit #07 pushed
-* [ ] GitHub state verified
-* [ ] working tree clean
-* [ ] backup created
-* [ ] final PROJECT_STATE updated
-* [ ] Transfer Prompt prepared
-
----
-
-# 36. Текущая точка проекта
-
-На данный момент:
-
-**Commit #01 — Project Foundation** ✅
-
-**Commit #02 — Knowledge Base** ✅
-
-**Commit #03 — Indexing** ✅
-
-**Commit #04 — Retrieval** ✅
-
-**Commit #05 — RAG Pipeline** ✅
-
-**Commit #06 — API Search** ✅
-
-**Commit #07 — Streamlit UI**
-**РЕАЛИЗОВАН — ПРОТЕСТИРОВАН — ОЖИДАЕТ COMMIT** ⏳
-
-Следующий этап:
-
-**Commit #08 — Formal Evaluation Dataset**
-
-Но переход к Commit #08 выполняется **только в новом чате после полного завершения и фиксации Commit #07**.
-
----
-
-# 37. Правило сохранения состояния
-
-`PROJECT_STATE.md` является главным техническим документом передачи контекста проекта.
-
-При его последующих обновлениях:
-
-* не удалять завершённые этапы;
-* не сокращать историю;
-* не заменять технические детали кратким summary;
-* не переписывать фактические результаты предположениями;
-* сохранять commit hashes;
-* сохранять реальные результаты тестов;
-* сохранять архитектурные решения;
-* сохранять ограничения MVP;
-* сохранять причины важных решений;
-* актуализировать только изменившееся состояние.
-
-> **PROJECT_STATE должен позволять продолжить разработку проекта в новом чате без необходимости восстанавливать историю по памяти.**
+После завершения Commit #08 создаётся backup и подготавливается Transfer Prompt для следующего этапа.
