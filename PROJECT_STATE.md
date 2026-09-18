@@ -10,7 +10,7 @@
 * **Product type:** AI Business Knowledge Assistant
 * **Russian:** ИИ-ассистент по корпоративной базе знаний
 * **Local path:** `C:\Dev\oss\ego-biz-wiki`
-* **Current development stage:** Commit #08 — Formal Evaluation Dataset — Completed
+* **Current development stage:** Commit #09 — Post-MVP Evaluation — Completed
 
 Демонстрационная компания: **EgoTech Solutions**
 
@@ -55,24 +55,26 @@
 
 **Один чат = один завершённый Git commit.**
 
-Каждый commit должен:
+Каждый технический commit должен:
 
 1. решать одну конкретную задачу;
 2. быть проверен;
-3. иметь обновлённую документацию;
+3. иметь обновлённую документацию, если это необходимо;
 4. быть зафиксирован в Git;
 5. быть отправлен в GitHub;
 6. иметь проверенное состояние рабочего дерева.
 
-После завершения commit дальнейшая разработка в текущем чате не продолжается.
+После завершения технического commit дальнейшая разработка в текущем чате не продолжается.
 
-Перед переходом к следующему commit создаётся backup и подготавливается Transfer Prompt.
+Перед переходом к следующему техническому этапу создаётся backup и подготавливается Transfer Prompt.
+
+Документальная синхронизация после Commit #09 не считается новым техническим commit и не получает номер `#10`.
 
 ---
 
 ## 5. Текущее состояние проекта
 
-Commit #08 завершает этап создания формальной базы для оценки качества RAG.
+Commit #09 завершает этап первичной формальной оценки качества текущего RAG baseline.
 
 На текущем этапе проект имеет:
 
@@ -87,9 +89,11 @@ Commit #08 завершает этап создания формальной б�
 * API `/search`;
 * API `/chat`;
 * Streamlit UI;
+* отображение источников;
 * формальный evaluation dataset;
-* документацию по основным подсистемам;
-* unit и integration tests.
+* автоматизированный evaluation runner;
+* unit и integration tests;
+* документацию по основным подсистемам.
 
 Основная функциональная цепочка:
 
@@ -107,7 +111,7 @@ Knowledge Base
        Answer + Sources
 ```
 
-Evaluation используется как отдельный слой проверки качества и не изменяет основной RAG pipeline.
+Evaluation является отдельным слоем проверки качества и использует существующий production RAG pipeline. Он не создаёт второй механизм Retrieval или отдельную реализацию RAG.
 
 ---
 
@@ -139,7 +143,9 @@ Application layer не должен зависеть от конкретной �
 
 Streamlit является тонким UI-слоем и взаимодействует с backend через HTTP. RAG-логика в UI не дублируется.
 
-Не следует создавать второй механизм Retrieval для отдельных API или evaluation-задач.
+Evaluation использует тот же production RAG pipeline, который применяется основным `/chat` сценарием.
+
+Не создаётся отдельный retrieval-механизм только для evaluation.
 
 ---
 
@@ -177,7 +183,7 @@ RETRIEVAL_SCORE_THRESHOLD = 1.30
 
 Используется Chroma `distance`. Меньшее значение означает более близкое векторное соответствие.
 
-Threshold является текущим MVP baseline. Он не считается окончательно оптимальным и должен оцениваться на формальном evaluation dataset.
+Threshold является текущим MVP baseline. Он не считается окончательно оптимальным и оценивается на формальном evaluation dataset.
 
 ### RAG
 
@@ -205,11 +211,15 @@ Answer + Sources
 В базе знаний не найдено достаточно информации для достоверного ответа на этот вопрос.
 ```
 
-При fallback:
+При deterministic fallback:
 
 ```text
 sources = []
 ```
+
+Production RAG также использует fallback, если LLM возвращает пустой ответ или сам возвращает точную fallback-фразу.
+
+Текущий prompt LLM явно требует использовать предоставленный контекст, если он содержит прямой ответ, и применять fallback только при недостатке информации.
 
 Текущая реализация намеренно не включает:
 
@@ -342,43 +352,124 @@ updated_at
 
 ## 10. Evaluation
 
-Commit #08 добавляет формальный evaluation dataset для систематической оценки качества RAG.
+Commit #09 добавляет не только формальный evaluation dataset, но и автоматизированный запуск оценки на текущем production RAG pipeline.
 
 Основные файлы:
 
 ```text
 evaluation/
 ├── dataset.yaml
-└── README.md
+├── README.md
+└── run_evaluation.py
 ```
 
 Текущий dataset:
 
 * **38 evaluation cases**;
-* уникальные идентификаторы кейсов;
-* покрытие существующей Knowledge Base;
-* ожидаемые результаты и ссылки на соответствующие документы используются как основа для последующей оценки Retrieval/RAG.
+* уникальные идентификаторы `eval-001` — `eval-038`;
+* контролируемое покрытие Knowledge Base;
+* ожидаемые результаты;
+* ожидаемые источники для source-based evaluation.
 
-`evaluation/dataset.yaml` является машинно-читаемым источником evaluation cases.
+Категории:
 
-`evaluation/README.md` описывает назначение, структуру и правила работы с dataset.
+* `relevant` — 14 cases;
+* `cross_category` — 8 cases;
+* `typical_user` — 4 cases;
+* `source_attribution` — 4 cases;
+* `out_of_kb` — 5 cases;
+* `ambiguous` — 3 cases.
 
-Важно:
+Используются следующие метрики:
 
-**Evaluation dataset не является второй Knowledge Base.**
+1. **Behavior Accuracy**
+2. **Expected Source Hit Rate**
+3. **Source Attribution Accuracy**
+4. **Fallback Accuracy**
 
-Он используется исключительно для контролируемой проверки поведения существующего RAG pipeline.
+Для метрик, связанных с expected sources, используются 30 cases, содержащих `expected_sources`.
 
-Commit #08 создаёт формальную основу для измерения качества. Оптимизация Retrieval не выполняется автоматически только из-за появления dataset.
+Фактический результат текущего baseline:
+
+```text
+Cases:                         38
+Source cases:                  30
+Behavior Accuracy:             92.1%
+Expected Source Hit Rate:      100.0%
+Source Attribution Accuracy:   93.3%
+Fallback Accuracy:             100.0%
+```
+
+Evaluation runner использует существующий production RAG pipeline, а не дублирует его логику.
+
+`expected_topics` не оцениваются простым string containment, поскольку такой подход не позволяет надёжно определить семантическую корректность ответа.
+
+Для fallback evaluation используется проверка наличия точной fallback-фразы в ответе. Это позволяет корректно учитывать случаи, когда модель дополнительно объясняет отсутствие информации.
+
+Evaluation не использует LLM-as-a-Judge или специализированные evaluation frameworks.
 
 ---
 
-## 11. Тестирование и верификация
+## 11. Результаты и выявленные ограничения Evaluation
 
-На текущем состоянии проекта:
+Текущая оценка показывает, что базовый RAG pipeline корректно проходит основную часть контролируемых сценариев, но выявляет отдельные ограничения.
+
+### Retrieval limitations
+
+`eval-017`:
+
+Один из ожидаемых документов не попадает в текущий Top-K при заданных параметрах Retrieval.
+
+`eval-023`:
+
+Один из ожидаемых документов также не попадает в текущий Top-K.
+
+Эти случаи относятся к ограничениям текущего vector retrieval baseline.
+
+### Ambiguous queries
+
+`eval-036`, `eval-037`, `eval-038`:
+
+Для этих кейсов ожидалось explicit clarification, однако текущий MVP возвращает answer.
+
+Это отражает отсутствие отдельного механизма управления неоднозначными запросами.
+
+### Fallback evaluation
+
+`eval-035` первоначально показал необходимость уточнения логики evaluation classifier.
+
+Ответ содержал fallback-фразу вместе с пояснением и нерелевантными источниками. Evaluation classifier был скорректирован так, чтобы наличие точной fallback-фразы классифицировалось как fallback.
+
+Это изменение относится к evaluation logic и не изменяет production RAG contract.
+
+### Принцип интерпретации результатов
+
+Цель Evaluation не заключается в искусственном достижении 100% любой ценой.
+
+Выявленные ограничения фиксируются как baseline limitations.
+
+Усложнение Retrieval или добавление новых механизмов должно рассматриваться только при наличии подтверждённой необходимости.
+
+В частности, текущие результаты сами по себе не являются основанием для автоматического добавления:
+
+* hybrid search;
+* reranking;
+* query expansion;
+* Agentic RAG;
+* отдельного clarification engine.
+
+Главный критерий:
+
+**Сначала измерить проблему — затем усложнять систему.**
+
+---
+
+## 12. Тестирование и верификация
+
+Текущее состояние автоматических тестов:
 
 ```text
-45 passed
+55 passed
 1 warning
 ```
 
@@ -391,12 +482,22 @@ pytest -q
 Результат:
 
 ```text
-45 passed, 1 warning
+55 passed, 1 warning
 ```
 
-Warning относится к внешней зависимости Starlette/AnyIO и имеет характер `DeprecationWarning`.
+Evaluation-specific tests:
 
-Это не является ошибкой проектной логики.
+```text
+8 passed
+```
+
+Warning относится к внешней зависимости Starlette/AnyIO:
+
+```text
+DeprecationWarning
+```
+
+и не связан с проектной логикой.
 
 Кроме автоматических тестов, для основных пользовательских сценариев используются ручные smoke-проверки.
 
@@ -435,7 +536,7 @@ Warning относится к внешней зависимости Starlette/An
 
 ---
 
-## 12. Структура проекта
+## 13. Структура проекта
 
 Ключевая структура:
 
@@ -448,7 +549,8 @@ ego-biz-wiki/
 │   └── infrastructure/
 ├── evaluation/
 │   ├── dataset.yaml
-│   └── README.md
+│   ├── README.md
+│   └── run_evaluation.py
 ├── knowledge_base/
 ├── scripts/
 ├── tests/
@@ -477,7 +579,7 @@ evaluation/
 
 ---
 
-## 13. История commits
+## 14. История commits
 
 | Commit | Назначение                | Статус    |
 | ------ | ------------------------- | --------- |
@@ -489,12 +591,15 @@ evaluation/
 | #06    | API Search                | Completed |
 | #07    | Streamlit UI              | Completed |
 | #08    | Formal Evaluation Dataset | Completed |
+| #09    | Post-MVP Evaluation       | Completed |
 
 Основная история разработки соответствует последовательному расширению одного MVP без создания параллельных архитектурных решений.
 
+Документальная синхронизация после Commit #09 не является новым техническим этапом и не получает номер `#10`.
+
 ---
 
-## 14. Известные ограничения
+## 15. Известные ограничения
 
 Текущий проект является демонстрационным MVP и не позиционируется как полноценная production enterprise-платформа.
 
@@ -504,7 +609,9 @@ evaluation/
 * основной документный формат MVP — Markdown;
 * Retrieval основан на vector similarity search;
 * используется фиксированный MVP `top-k`;
-* threshold пока является baseline;
+* threshold является baseline;
+* два evaluation cases показывают ограничения текущего Top-K retrieval;
+* ambiguous cases не имеют отдельного clarification behavior;
 * нет hybrid search;
 * нет reranking;
 * нет Agentic RAG;
@@ -517,97 +624,90 @@ evaluation/
 
 ---
 
-## 15. Roadmap
+16. Roadmap
+Ближайшее направление
 
-### Ближайшее направление
+Анализ результатов формальной оценки и определение того, требуют ли выявленные ограничения изменения текущего MVP baseline.
 
-Анализ результатов формальной оценки и проверка качества текущего Retrieval baseline.
-
-### Следующие возможные направления
-
-1. Анализ evaluation results.
-2. Проверка необходимости изменения `top-k` и `RETRIEVAL_SCORE_THRESHOLD`.
-3. Итеративное улучшение Retrieval только при наличии подтверждённой проблемы.
-4. Document Standardization для разнородных форматов:
-
-   * PDF;
-   * DOCX;
-   * XLSX;
-   * HTML;
-   * TXT;
-   * другие форматы.
+Возможные дальнейшие направления
+Анализ отдельных Retrieval failures.
+Проверка необходимости изменения top-k и RETRIEVAL_SCORE_THRESHOLD.
+Повторное измерение после обоснованных изменений.
+Улучшение обработки ambiguous queries, если это потребуется для MVP.
+Document Standardization для разнородных форматов:
+PDF;
+DOCX;
+XLSX;
+HTML;
+TXT;
+другие форматы.
 
 Advanced-подходы не добавляются без подтверждённой необходимости.
 
----
+17. Следующий технический этап
 
-## 16. Следующий шаг
+Следующий технический этап ещё не выбран автоматически.
 
-**Следующий этап: анализ результатов Evaluation.**
+После завершения документальной синхронизации необходимо отдельно проанализировать результаты Evaluation и принять решение:
 
-Перед изменением Retrieval необходимо:
+оставить текущий Retrieval baseline без изменений;
+либо выполнить ограниченное, обоснованное улучшение.
 
-1. запустить формальную оценку на текущем baseline;
-2. зафиксировать результаты;
-3. определить обнаруженные ошибки;
-4. классифицировать причины ошибок;
-5. только после этого принять решение о необходимости изменений.
+При принятии решения необходимо руководствоваться главным принципом проекта:
 
-Если текущие метрики показывают достаточное качество для MVP, Retrieval не усложняется.
+SIMPLE, COMPLETE & WORKING MVP > COMPLEX, UNSTABLE PRODUCT
 
----
+Исторический отчётный этап является отдельной задачей документации и не изменяет техническую нумерацию commits.
 
-## 17. Git state
+18. Git state
 
-Последний опубликованный commit перед фиксацией Commit #08:
+Последний нумерованный технический commit:
 
-```text
-db49c25 feat: add Streamlit UI
-```
+ba6d3ce feat: add post-mvp evaluation
 
 Текущая ветка:
 
-```text
 main
-```
 
 Remote:
 
-```text
 origin
 https://github.com/egorover/ego-biz-wiki.git
-```
 
-На момент подготовки Commit #08:
+После Commit #09:
 
-```text
 HEAD -> main
 origin/main -> main
-```
+working tree clean
 
-Изменения Commit #08:
+Commit #09 содержит:
 
-```text
-evaluation/README.md
-evaluation/dataset.yaml
+app/infrastructure/llm/openai.py
+evaluation/run_evaluation.py
+tests/test_evaluation.py
+
+Временные .bak файлы, использовавшиеся во время разработки evaluation, были удалены до commit.
+
+Текущая документальная синхронизация должна изменить только документацию:
+
+README.md
 PROJECT_STATE.md
-```
+evaluation/README.md
 
-Состояние после подготовки документа должно быть проверено командами:
+Эти изменения могут быть зафиксированы отдельным Git commit без порядкового номера.
 
-```powershell
+После документальной синхронизации необходимо проверить:
+
 git diff --check
 pytest -q
 git status
-```
+git diff
 
-После успешной проверки изменения Commit #08 фиксируются одним Git commit и отправляются в `origin/main`.
+После успешной проверки документация фиксируется отдельным Git commit и отправляется в origin/main.
 
 После push необходимо убедиться, что:
 
-```text
 HEAD == origin/main
 working tree clean
-```
 
-После завершения Commit #08 создаётся backup и подготавливается Transfer Prompt для следующего этапа.
+После этого техническая история проекта остаётся завершённой на Commit #09.

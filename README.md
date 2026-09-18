@@ -25,15 +25,17 @@ EgoBiz Wiki:
 5. формирует ответ на основе найденной информации;
 6. показывает источники, использованные для ответа.
 
-Если в Knowledge Base недостаточно информации, система не пытается придумать ответ и возвращает:
+Если в Knowledge Base недостаточно информации, система возвращает:
 
 > В базе знаний не найдено достаточно информации для достоверного ответа на этот вопрос.
+
+При отсутствии достаточного контекста LLM не вызывается.
 
 ---
 
 ## Current Status
 
-**Commit #08 — Formal Evaluation Dataset**
+**Commit #09 — Post-MVP Evaluation**
 
 Основные функциональные возможности MVP реализованы:
 
@@ -50,11 +52,25 @@ EgoBiz Wiki:
 * Streamlit UI;
 * отображение источников;
 * unit и integration tests;
-* формальный evaluation dataset.
+* формальный evaluation dataset;
+* автоматизированный evaluation runner.
 
 Текущий evaluation dataset содержит **38 контролируемых evaluation cases**.
 
-Evaluation dataset предназначен для систематической проверки качества текущего RAG pipeline и дальнейшего анализа Retrieval.
+После Commit #09 проведена первичная формальная оценка текущего RAG baseline.
+
+### Evaluation results
+
+```text
+Cases:                         38
+Source cases:                  30
+Behavior Accuracy:             92.1%
+Expected Source Hit Rate:      100.0%
+Source Attribution Accuracy:   93.3%
+Fallback Accuracy:             100.0%
+```
+
+Evaluation выявил отдельные ограничения текущего baseline, связанные с Top-K retrieval и обработкой ambiguous queries. Эти ограничения зафиксированы как baseline limitations и не являются основанием для автоматического усложнения архитектуры.
 
 ---
 
@@ -115,7 +131,7 @@ Distance threshold: 1.30
 
 Используется Chroma distance: меньшее значение означает более близкое векторное соответствие.
 
-Текущий threshold является **MVP baseline** и не считается окончательно оптимальным.
+Текущий threshold является **MVP baseline** и оценивается на формальном evaluation dataset.
 
 ---
 
@@ -139,9 +155,11 @@ LLM
 Answer + Sources
 ```
 
-Если после Retrieval не найдено достаточно релевантного контекста, LLM не вызывается.
+Если после Retrieval не найдено достаточно релевантного контекста, LLM не вызывается и используется deterministic fallback.
 
-Это позволяет отделить ситуацию «информация отсутствует в базе» от генерации ответа без достаточной опоры на Knowledge Base.
+Production RAG также использует fallback, если LLM возвращает пустой ответ или точную fallback-фразу.
+
+Текущий LLM prompt требует использовать предоставленный контекст, если он содержит прямой ответ, и применять fallback только при недостатке информации.
 
 ---
 
@@ -211,23 +229,54 @@ Streamlit не содержит собственной RAG-логики.
 ```text
 evaluation/
 ├── dataset.yaml
-└── README.md
+├── README.md
+└── run_evaluation.py
 ```
 
-`dataset.yaml` содержит **38 evaluation cases**.
+`dataset.yaml` содержит **38 evaluation cases**:
 
-Каждый case содержит контролируемые данные, необходимые для последующей оценки поведения системы.
+* `relevant` — 14;
+* `cross_category` — 8;
+* `typical_user` — 4;
+* `source_attribution` — 4;
+* `out_of_kb` — 5;
+* `ambiguous` — 3.
 
-Evaluation dataset используется для проверки:
+Evaluation runner использует **существующий production RAG pipeline**, а не отдельную реализацию Retrieval или RAG.
 
-* качества Retrieval;
-* соответствия ответа ожидаемому контексту;
-* поведения системы при недостатке информации;
-* покрытия основных сценариев Knowledge Base.
+### Метрики
 
-Evaluation не является второй Knowledge Base и не изменяет основной RAG pipeline.
+Используются четыре основные метрики:
 
-Следующий этап проекта — запуск формальной оценки на текущем baseline и анализ результатов.
+1. **Behavior Accuracy**
+2. **Expected Source Hit Rate**
+3. **Source Attribution Accuracy**
+4. **Fallback Accuracy**
+
+Для метрик, связанных с ожидаемыми источниками, используются 30 cases, содержащих `expected_sources`.
+
+Текущий результат baseline:
+
+```text
+Behavior Accuracy:             92.1%
+Expected Source Hit Rate:      100.0%
+Source Attribution Accuracy:   93.3%
+Fallback Accuracy:             100.0%
+```
+
+Evaluation не использует LLM-as-a-Judge или специализированные evaluation frameworks.
+
+Evaluation является отдельным слоем проверки качества и не изменяет основную архитектуру MVP.
+
+### Выявленные ограничения
+
+Evaluation выявил:
+
+* два retrieval cases, в которых один из ожидаемых документов не попадает в текущий Top-K;
+* три ambiguous cases, для которых dataset ожидает clarification, тогда как текущий MVP возвращает answer;
+* необходимость корректного учёта fallback-фразы в evaluation classifier.
+
+Эти результаты используются для принятия дальнейших технических решений.
 
 ---
 
@@ -306,7 +355,8 @@ ego-biz-wiki/
 ├── knowledge_base/
 ├── evaluation/
 │   ├── dataset.yaml
-│   └── README.md
+│   ├── README.md
+│   └── run_evaluation.py
 ├── scripts/
 ├── tests/
 ├── ui/
@@ -328,8 +378,14 @@ ego-biz-wiki/
 Текущее состояние:
 
 ```text
-45 passed
+55 passed
 1 warning
+```
+
+Evaluation-specific tests:
+
+```text
+8 passed
 ```
 
 Предупреждение связано с deprecated API в зависимости `Starlette/AnyIO` и не является ошибкой проектной логики.
@@ -359,13 +415,13 @@ MVP сознательно не использует:
 
 ## Roadmap
 
-Ближайший этап:
+Ближайшее направление:
 
-1. запустить формальную Evaluation;
-2. получить baseline results;
-3. проанализировать ошибки Retrieval и RAG;
-4. определить необходимость изменений;
-5. повторно измерить результат после изменений.
+1. анализ результатов Evaluation;
+2. анализ отдельных Retrieval limitations;
+3. проверка необходимости изменения `top-k` и `RETRIEVAL_SCORE_THRESHOLD`;
+4. повторное измерение после обоснованных изменений;
+5. улучшение обработки ambiguous queries, если это потребуется для MVP.
 
 Возможные дальнейшие направления:
 
