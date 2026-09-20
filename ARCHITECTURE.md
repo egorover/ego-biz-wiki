@@ -590,7 +590,7 @@ evaluation/
 38 evaluation cases
 ```
 
-Evaluation runner использует существующий production RAG pipeline.
+Evaluation runner использует существующий RAG pipeline.
 
 Evaluation используется для контролируемого анализа:
 
@@ -687,20 +687,25 @@ ego-biz-wiki/
 │   ├── application/
 │   ├── domain/
 │   └── infrastructure/
+│
 ├── evaluation/
 │   ├── dataset.yaml
 │   ├── README.md
 │   └── run_evaluation.py
+│
 ├── knowledge_base/
 ├── scripts/
 ├── tests/
 ├── ui/
-├── docs/
+│
 ├── .github/
 │   └── workflows/
 │       └── ci.yml
+│
 ├── .env.example
-├── README.md
+├── .gitignore
+├── ARCHITECTURE.md
+├── EgoBiz_Wiki.bat
 ├── PROJECT_STATE.md
 └── pyproject.toml
 ```
