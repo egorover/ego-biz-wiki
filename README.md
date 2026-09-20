@@ -8,9 +8,7 @@ EgoBiz Wiki — компактный RAG-based AI-ассистент для от
 
 Основной принцип проекта:
 
-> **SIMPLE, COMPLETE & WORKING MVP \> COMPLEX, UNSTABLE PRODUCT**
-
----
+> **SIMPLE, COMPLETE & WORKING MVP > COMPLEX, UNSTABLE PRODUCT**
 
 ## Что делает EgoBiz Wiki
 
@@ -31,13 +29,11 @@ EgoBiz Wiki:
 
 При отсутствии достаточного контекста LLM не вызывается.
 
----
-
 ## Current Status
 
 Последний функциональный commit: **Commit #09 — Post-MVP Evaluation**
 
-Последний Git commit: `dc6d7a6 ci: add GitHub Actions test workflow`
+После завершения функциональной истории проекта были отдельно добавлены технические и документационные изменения, включая GitHub Actions CI и синхронизацию документации.
 
 Основные функциональные возможности MVP реализованы:
 
@@ -71,9 +67,9 @@ EgoBiz Wiki:
 - Source Attribution Accuracy: 93.3%
 - Fallback Accuracy: 100.0%
 
-Evaluation выявил отдельные ограничения текущего baseline, связанные с Top-K retrieval и обработкой ambiguous queries. Эти ограничения зафиксированы как baseline limitations и не являются основанием для автоматического усложнения архитектуры.
+Evaluation выявил отдельные ограничения текущего baseline, связанные с Top-K retrieval и обработкой ambiguous queries. Эти ограничения зафиксированы как baseline limitations и используются для определения дальнейших технических шагов.
 
-GitHub Actions CI дополнительно проверяет проект на Python 3.12 и 3.13 и запускает полный набор тестов.
+GitHub Actions CI проверяет проект на Python 3.12 и 3.13 и запускает полный набор тестов.
 
 Continuous Integration реализован. Continuous Deployment (CD) в текущем MVP не реализован.
 
@@ -92,7 +88,7 @@ Continuous Integration реализован. Continuous Deployment (CD) в те�
 - Customer Operations;
 - FAQ.
 
-Текущая база содержит 23 Markdown-документа и `manifest.yaml`.
+Текущая база содержит **23 Markdown-документа и `manifest.yaml`**.
 
 Используемый в MVP нормализованный Markdown-формат представляет собой наш идеальный документооборот.
 
@@ -104,13 +100,13 @@ Continuous Integration реализован. Continuous Deployment (CD) в те�
 
 ```text
 Documents
-↓
-Load
-↓
+    |
+  Load
+    |
 Split into chunks
-↓
+    |
 Generate embeddings
-↓
+    |
 Store in ChromaDB
 ```
 
@@ -146,23 +142,23 @@ Retrieval выполняет semantic search по ChromaDB.
 
 ```text
 User Query
-↓
+    |
 Query Embedding
-↓
+    |
 ChromaDB Retrieval
-↓
+    |
 Top-K + Threshold
-↓
+    |
 Relevant Context
-↓
+    |
 LLM
-↓
+    |
 Answer + Sources
 ```
 
 Если после Retrieval не найдено достаточно релевантного контекста, LLM не вызывается и используется deterministic fallback.
 
-Production RAG также использует fallback, если LLM возвращает пустой ответ или точную fallback-фразу.
+Текущий RAG pipeline также использует fallback, если LLM возвращает пустой ответ или точную fallback-фразу.
 
 Текущий LLM prompt требует использовать предоставленный контекст, если он содержит прямой ответ, и применять fallback только при недостатке информации.
 
@@ -234,31 +230,31 @@ evaluation/
 - out_of_kb — 5;
 - ambiguous — 3.
 
-Evaluation runner использует существующий production RAG pipeline, а не отдельную реализацию Retrieval или RAG.
+Evaluation runner использует существующий RAG pipeline, а не отдельную реализацию Retrieval или RAG.
 
-### Метрики
+#### Метрики
 
 Используются четыре основные метрики:
 
-- Behavior Accuracy
-- Expected Source Hit Rate
-- Source Attribution Accuracy
-- Fallback Accuracy
+- Behavior Accuracy;
+- Expected Source Hit Rate;
+- Source Attribution Accuracy;
+- Fallback Accuracy.
 
 Для метрик, связанных с ожидаемыми источниками, используются 30 cases, содержащих `expected_sources`.
 
-Текущий результат baseline:
+Текущий baseline:
 
-- Behavior Accuracy: 92.1%
-- Expected Source Hit Rate: 100.0%
-- Source Attribution Accuracy: 93.3%
-- Fallback Accuracy: 100.0%
+- Behavior Accuracy: 92.1%;
+- Expected Source Hit Rate: 100.0%;
+- Source Attribution Accuracy: 93.3%;
+- Fallback Accuracy: 100.0%.
 
 Evaluation не использует LLM-as-a-Judge или специализированные evaluation frameworks.
 
 Evaluation является отдельным слоем проверки качества и не изменяет основную архитектуру MVP.
 
-### Выявленные ограничения
+#### Выявленные ограничения
 
 Evaluation выявил:
 
@@ -266,9 +262,7 @@ Evaluation выявил:
 - три ambiguous cases, для которых dataset ожидает clarification, тогда как текущий MVP возвращает answer;
 - необходимость корректного учёта fallback-фразы в evaluation classifier.
 
-Эти результаты используются для принятия дальнейших технических решений.
-
----
+Эти результаты рассматриваются как baseline limitations и используются для принятия дальнейших технических решений.
 
 ## Architecture
 
@@ -281,18 +275,19 @@ app/
 ├── domain/
 ├── application/
 ├── infrastructure/
-└── api/
-
-ui/
+├── api/
+└── ui/
 ```
 
 ### Domain
 
 Содержит основные модели и абстракции системы.
 
+Domain layer не зависит от ChromaDB, LangChain, provider SDK или FastAPI.
+
 ### Application
 
-Содержит application services и orchestration.
+Содержит application services, orchestration и application-level protocols.
 
 ### Infrastructure
 
@@ -313,14 +308,13 @@ Streamlit presentation layer.
 
 Подробнее архитектура описана в `ARCHITECTURE.md`.
 
----
-
 ## Technology Stack
 
 - Python 3.12+
 - FastAPI
 - Streamlit
-- LangChain
+- `langchain-text-splitters`
+- `langchain-openai`
 - OpenAI API / OpenAI-compatible API
 - ChromaDB
 - OpenAI Embeddings
@@ -330,43 +324,88 @@ Streamlit presentation layer.
 
 Поддерживается работа через OpenAI-compatible provider, включая ProxyAPI, без provider-specific branching в application logic.
 
----
-
 ## Project Structure
 
 ```text
 ego-biz-wiki/
-├── .github/
-│   └── workflows/
-│       └── ci.yml
 ├── app/
 │   ├── api/
 │   ├── application/
 │   ├── domain/
 │   └── infrastructure/
-├── knowledge_base/
+│
 ├── evaluation/
 │   ├── dataset.yaml
 │   ├── README.md
 │   └── run_evaluation.py
+│
+├── knowledge_base/
+│   ├── customer_operations/
+│   ├── faq/
+│   ├── hr/
+│   ├── it/
+│   ├── operations/
+│   ├── security/
+│   └── manifest.yaml
+│
 ├── scripts/
+│   └── index_knowledge_base.py
+│
 ├── tests/
+│   ├── integration/
+│   └── unit/
+│
 ├── ui/
-├── docs/
+│   └── streamlit_app.py
+│
+├── .github/
+│   └── workflows/
+│       └── ci.yml
+│
 ├── .env.example
+├── .gitignore
 ├── ARCHITECTURE.md
+├── EgoBiz_Wiki.bat
 ├── PROJECT_STATE.md
 ├── README.md
 └── pyproject.toml
 ```
 
----
+## Local Demo Launch
+
+Для локальной демонстрации проекта предусмотрен one-click launcher:
+
+```text
+EgoBiz_Wiki.bat
+```
+
+Launcher запускает:
+
+1. FastAPI backend на `http://127.0.0.1:8000`;
+2. Streamlit UI;
+3. браузер автоматически открывается Streamlit.
+
+Перед запуском должен быть создан локальный virtual environment `.venv` и установлены зависимости проекта.
+
+Для ручного запуска backend:
+
+```bash
+.venv\Scripts\python.exe -m uvicorn app.main:app --host 127.0.0.1 --port 8000
+```
+
+Для ручного запуска UI:
+
+```bash
+.venv\Scripts\python.exe -m streamlit run ui\streamlit_app.py
+```
+
+Desktop shortcut используется только для удобства локальной демонстрации и не является частью Git repository.
 
 ## Testing
 
 Проект покрыт unit и integration tests.
 
-Текущее состояние:
+Текущее состояние тестового набора:
 
 - 55 passed
 - 1 warning
@@ -377,25 +416,23 @@ Evaluation-specific tests:
 
 Предупреждение связано с deprecated API в зависимости Starlette/AnyIO и не является ошибкой проектной логики.
 
----
-
 ## Continuous Integration
 
 GitHub Actions workflow запускается:
 
-- при push в main;
-- при pull_request в main.
+- при push в `main`;
+- при pull_request в `main`.
 
 CI проверяет проект на:
 
-- Python 3.12
-- Python 3.13
+- Python 3.12;
+- Python 3.13.
 
 Для каждой версии выполняются установка test dependencies и полный набор pytest.
 
-Последний CI run для commit `dc6d7a6` завершился успешно.
+Continuous Integration реализован.
 
----
+Continuous Deployment (CD) в текущем MVP не реализован.
 
 ## Architectural Constraints
 
@@ -415,8 +452,6 @@ MVP сознательно не использует:
 Главный критерий развития проекта:
 
 > Сначала измерить проблему — затем усложнять систему.
-
----
 
 ## Roadmap
 
@@ -441,8 +476,6 @@ MVP сознательно не использует:
 
 Advanced RAG approaches добавляются только при наличии измеренного обоснования.
 
----
-
 ## Project Philosophy
 
 EgoBiz Wiki создаётся как небольшой, понятный и воспроизводимый рабочий MVP, а не как максимально сложная AI-система.
@@ -455,4 +488,4 @@ EgoBiz Wiki создаётся как небольшой, понятный и в
 - понятной для сопровождения;
 - достаточной для поставленной задачи.
 
-> **SIMPLE, COMPLETE & WORKING MVP \> COMPLEX, UNSTABLE PRODUCT**
+> **SIMPLE, COMPLETE & WORKING MVP > COMPLEX, UNSTABLE PRODUCT**
