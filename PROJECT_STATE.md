@@ -109,7 +109,7 @@ Knowledge Base
  Answer + Sources
 ```
 
-Evaluation является отдельным слоем проверки качества и использует существующий production RAG pipeline. Он не создаёт второй механизм Retrieval или отдельную реализацию RAG.
+Evaluation является отдельным слоем проверки качества и использует существующий RAG pipeline. Он не создаёт второй механизм Retrieval или отдельную реализацию RAG.
 
 ---
 
@@ -141,7 +141,7 @@ Application layer не должен зависеть от конкретной �
 
 Streamlit является тонким UI-слоем и взаимодействует с backend через HTTP. RAG-логика в UI не дублируется.
 
-Evaluation использует тот же production RAG pipeline, который применяется основным `/chat` сценарием. Не создаётся отдельный retrieval-механизм только для evaluation.
+Evaluation использует тот же RAG pipeline, который применяется основным `/chat` сценарием. Не создаётся отдельный retrieval-механизм только для evaluation.
 
 ---
 
@@ -201,7 +201,7 @@ Answer + Sources
 
 При deterministic fallback: `sources = []`
 
-Production RAG также использует fallback, если LLM возвращает пустой ответ или сам возвращает точную fallback-фразу.
+Текущий RAG pipeline также использует fallback, если LLM возвращает пустой ответ или сам возвращает точную fallback-фразу.
 
 Текущий prompt LLM явно требует использовать предоставленный контекст, если он содержит прямой ответ, и применять fallback только при недостатке информации.
 
@@ -335,7 +335,7 @@ STREAMLIT_API_URL
 
 ## 10. Evaluation
 
-Commit #09 добавляет не только формальный evaluation dataset, но и автоматизированный запуск оценки на текущем production RAG pipeline.
+Commit #09 добавляет не только формальный evaluation dataset, но и автоматизированный запуск оценки на текущем RAG pipeline.
 
 Основные файлы:
 
@@ -381,7 +381,7 @@ evaluation/
 - Source Attribution Accuracy: 93.3%
 - Fallback Accuracy: 100.0%
 
-Evaluation runner использует существующий production RAG pipeline, а не дублирует его логику.
+Evaluation runner использует существующий RAG pipeline, а не дублирует его логику.
 
 `expected_topics` не оцениваются простым string containment, поскольку такой подход не позволяет надёжно определить семантическую корректность ответа.
 
@@ -518,20 +518,39 @@ ego-biz-wiki/
 │   ├── application/
 │   ├── domain/
 │   └── infrastructure/
+│
 ├── evaluation/
 │   ├── dataset.yaml
 │   ├── README.md
 │   └── run_evaluation.py
+│
 ├── knowledge_base/
+│   ├── customer_operations/
+│   ├── faq/
+│   ├── hr/
+│   ├── it/
+│   ├── operations/
+│   ├── security/
+│   └── manifest.yaml
+│
 ├── scripts/
+│   └── index_knowledge_base.py
+│
 ├── tests/
+│   ├── integration/
+│   └── unit/
+│
 ├── ui/
-├── docs/
+│   └── streamlit_app.py
+│
 ├── .github/
 │   └── workflows/
 │       └── ci.yml
+│
 ├── .env.example
-├── README.md
+├── .gitignore
+├── ARCHITECTURE.md
+├── EgoBiz_Wiki.bat
 ├── PROJECT_STATE.md
 └── pyproject.toml
 ```
