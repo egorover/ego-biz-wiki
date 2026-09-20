@@ -2,15 +2,15 @@
 
 ## 1. Основная информация
 
-* **Project:** EgoBiz Wiki
-* **Repository:** `ego-biz-wiki`
-* **GitHub:** `https://github.com/egorover/ego-biz-wiki`
-* **Author:** Александр Егоров / egorover
-* **Project type:** Выпускной проект курса
-* **Product type:** AI Business Knowledge Assistant
-* **Russian:** ИИ-ассистент по корпоративной базе знаний
-* **Local path:** `C:\Dev\oss\ego-biz-wiki`
-* **Current development stage:** Commit #09 — Post-MVP Evaluation — Completed
+- **Project:** EgoBiz Wiki
+- **Repository:** ego-biz-wiki
+- **GitHub:** https://github.com/egorover/ego-biz-wiki
+- **Author:** Александр Егоров / egorover
+- **Project type:** Выпускной проект курса
+- **Product type:** AI Business Knowledge Assistant
+- **Russian:** ИИ-ассистент по корпоративной базе знаний
+- **Local path:** C:\Dev\oss\ego-biz-wiki
+- **Current development stage:** Commit #09 — Post-MVP Evaluation — Completed
 
 Демонстрационная компания: **EgoTech Solutions**
 
@@ -20,7 +20,7 @@
 
 ## 2. Главный принцип проекта
 
-**SIMPLE, COMPLETE & WORKING MVP > COMPLEX, UNSTABLE PRODUCT**
+> **SIMPLE, COMPLETE & WORKING MVP > COMPLEX, UNSTABLE PRODUCT**
 
 Сначала создаётся простой, самодостаточный и стабильно работающий MVP.
 
@@ -34,14 +34,14 @@
 
 Английский используется там, где это технически необходимо или соответствует принятому техническому стандарту:
 
-* имена файлов;
-* имена директорий;
-* Python identifiers;
-* API endpoints;
-* названия библиотек;
-* названия технологий;
-* технические термины;
-* Git commit messages.
+- имена файлов;
+- имена директорий;
+- Python identifiers;
+- API endpoints;
+- названия библиотек;
+- названия технологий;
+- технические термины;
+- Git commit messages.
 
 Пользовательская документация, пояснения, UI и ответы AI должны быть преимущественно на русском языке.
 
@@ -53,7 +53,7 @@
 
 Основное правило:
 
-**Один чат = один завершённый Git commit.**
+> **Один чат = один завершённый Git commit.**
 
 Каждый технический commit должен:
 
@@ -68,8 +68,6 @@
 
 Перед переходом к следующему техническому этапу создаётся backup и подготавливается Transfer Prompt.
 
-Документальная синхронизация после Commit #09 не считается новым техническим commit и не получает номер `#10`.
-
 ---
 
 ## 5. Текущее состояние проекта
@@ -78,22 +76,23 @@ Commit #09 завершает этап первичной формальной �
 
 На текущем этапе проект имеет:
 
-* контролируемую корпоративную Knowledge Base;
-* pipeline индексации документов;
-* persistent ChromaDB index;
-* семантический Retrieval;
-* distance threshold;
-* RAG pipeline с LLM;
-* deterministic fallback при отсутствии достаточного контекста;
-* API `/health`;
-* API `/search`;
-* API `/chat`;
-* Streamlit UI;
-* отображение источников;
-* формальный evaluation dataset;
-* автоматизированный evaluation runner;
-* unit и integration tests;
-* документацию по основным подсистемам.
+- контролируемую корпоративную Knowledge Base;
+- pipeline индексации документов;
+- persistent ChromaDB index;
+- семантический Retrieval;
+- distance threshold;
+- RAG pipeline c LLM;
+- deterministic fallback при отсутствии достаточного контекста;
+- API `/health`;
+- API `/search`;
+- API `/chat`;
+- Streamlit UI;
+- отображение источников;
+- формальный evaluation dataset;
+- автоматизированный evaluation runner;
+- unit и integration tests;
+- документацию по основным подсистемам;
+- GitHub Actions CI.
 
 Основная функциональная цепочка:
 
@@ -103,12 +102,11 @@ Knowledge Base
    Indexing
       ↓
    Retrieval
-    ↙     ↘
-/search   /chat
-   ↓        ↓
- Chunks    RAG
-             ↓
-       Answer + Sources
+   /search  /chat
+      ↓
+   Chunks  RAG
+      ↓
+ Answer + Sources
 ```
 
 Evaluation является отдельным слоем проверки качества и использует существующий production RAG pipeline. Он не создаёт второй механизм Retrieval или отдельную реализацию RAG.
@@ -131,11 +129,11 @@ ui/
 
 Основные слои:
 
-* **Domain** — бизнес-модели и абстракции;
-* **Application** — orchestration и application services;
-* **Infrastructure** — ChromaDB, embeddings, LLM и загрузка документов;
-* **API** — FastAPI endpoints;
-* **UI** — Streamlit presentation layer.
+- **Domain** — бизнес-модели и абстракции;
+- **Application** — orchestration и application services;
+- **Infrastructure** — ChromaDB, embeddings, LLM и загрузка документов;
+- **API** — FastAPI endpoints;
+- **UI** — Streamlit presentation layer.
 
 Application layer не должен зависеть от конкретной реализации provider.
 
@@ -143,9 +141,7 @@ Application layer не должен зависеть от конкретной �
 
 Streamlit является тонким UI-слоем и взаимодействует с backend через HTTP. RAG-логика в UI не дублируется.
 
-Evaluation использует тот же production RAG pipeline, который применяется основным `/chat` сценарием.
-
-Не создаётся отдельный retrieval-механизм только для evaluation.
+Evaluation использует тот же production RAG pipeline, который применяется основным `/chat` сценарием. Не создаётся отдельный retrieval-механизм только для evaluation.
 
 ---
 
@@ -171,17 +167,13 @@ Retrieved Chunks
 
 Текущие параметры:
 
-```text
-chunk_size = 800
-chunk_overlap = 120
+- `chunk_size = 800`
+- `chunk_overlap = 120`
+- `embedding model = text-embedding-3-small`
+- `RETRIEVAL_TOP_K = 5`
+- `RETRIEVAL_SCORE_THRESHOLD = 1.30`
 
-embedding model = text-embedding-3-small
-
-RETRIEVAL_TOP_K = 5
-RETRIEVAL_SCORE_THRESHOLD = 1.30
-```
-
-Используется Chroma `distance`. Меньшее значение означает более близкое векторное соответствие.
+Используется Chroma distance. Меньшее значение означает более близкое векторное соответствие.
 
 Threshold является текущим MVP baseline. Он не считается окончательно оптимальным и оценивается на формальном evaluation dataset.
 
@@ -203,19 +195,11 @@ OpenAI-compatible LLM
 Answer + Sources
 ```
 
-Если после Retrieval и threshold filtering релевантных фрагментов нет, LLM не вызывается.
+Если после Retrieval и threshold filtering релевантных фрагментов нет, LLM не вызывается. Используется точный fallback:
 
-Используется точный fallback:
+> В базе знаний не найдено достаточно информации для достоверного ответа на этот вопрос.
 
-```text
-В базе знаний не найдено достаточно информации для достоверного ответа на этот вопрос.
-```
-
-При deterministic fallback:
-
-```text
-sources = []
-```
+При deterministic fallback: `sources = []`
 
 Production RAG также использует fallback, если LLM возвращает пустой ответ или сам возвращает точную fallback-фразу.
 
@@ -223,14 +207,14 @@ Production RAG также использует fallback, если LLM возвр
 
 Текущая реализация намеренно не включает:
 
-* Agentic RAG;
-* agents;
-* LangGraph;
-* hybrid search;
-* reranking;
-* external web search;
-* long-term memory;
-* сложную orchestration.
+- Agentic RAG;
+- agents;
+- LangGraph;
+- hybrid search;
+- reranking;
+- external web search;
+- long-term memory;
+- сложную orchestration.
 
 ---
 
@@ -240,51 +224,54 @@ Production RAG также использует fallback, если LLM возвр
 
 Реализованы следующие endpoints:
 
-```text
-GET  /health
-POST /index
-POST /search
-POST /chat
+- `GET /health`
+- `POST /search`
+- `POST /chat`
+
+Endpoint `/index` не реализован.
+
+Индексация Knowledge Base выполняется отдельным script:
+
+```bash
+python scripts/index_knowledge_base.py
 ```
 
-### `/health`
+#### `/health`
 
 Проверяет доступность и работоспособность backend.
 
-### `/index`
+Текущий ответ содержит:
 
-Запускает indexing pipeline для Knowledge Base и обновления persistent ChromaDB index.
+- `status = ok`
+- `service = EgoBiz Wiki`
+- `version = 0.1.0`
 
-### `/search`
+#### `/search`
 
 Выполняет Retrieval без вызова LLM.
 
 Назначение:
 
-* демонстрация Retrieval отдельно от RAG;
-* отладка;
-* проверка найденных chunks;
-* подготовка данных для оценки качества.
+- демонстрация Retrieval отдельно от RAG;
+- отладка;
+- проверка найденных chunks;
+- подготовка данных для оценки качества.
 
 Результат содержит информацию о найденных фрагментах, включая:
 
-```text
-chunk_id
-document_id
-title
-source
-content
-distance
-```
+- `chunk_id`
+- `document_id`
+- `title`
+- `source`
+- `content`
+- `distance`
 
-### `/chat`
+#### `/chat`
 
 Выполняет полный RAG pipeline и возвращает:
 
-```text
-answer
-sources
-```
+- `answer`
+- `sources`
 
 ### Streamlit UI
 
@@ -292,11 +279,11 @@ UI реализован как отдельный тонкий слой.
 
 Основные свойства:
 
-* отправляет запросы в FastAPI;
-* отображает ответ и источники;
-* валидирует пустой запрос на стороне UI;
-* обрабатывает недоступность backend;
-* не содержит собственной RAG-логики.
+- отправляет запросы в FastAPI;
+- отображает ответ и источники;
+- валидирует пустой запрос на стороне UI;
+- обрабатывает недоступность backend;
+- не содержит собственной RAG-логики.
 
 Адрес backend передаётся через:
 
@@ -308,41 +295,37 @@ STREAMLIT_API_URL
 
 ## 9. Knowledge Base
 
-Демонстрационная база знаний принадлежит компании **EgoTech Solutions**.
+Демонстрационная база знаний принадлежит компании EgoTech Solutions.
 
 Текущий формат — нормализованные Markdown-документы с единообразной структурой.
 
 В Knowledge Base:
 
-```text
-23 Markdown documents
-manifest.yaml
-```
+- 23 Markdown documents
+- `manifest.yaml`
 
 Основные категории:
 
-* `customer_operations`
-* `faq`
-* `hr`
-* `it`
-* `operations`
-* `security`
+- `customer_operations`
+- `faq`
+- `hr`
+- `it`
+- `operations`
+- `security`
 
 Документы описываются через `manifest.yaml`.
 
 Для chunks сохраняются основные метаданные документа:
 
-```text
-document_id
-title
-path
-source
-category
-subcategory
-updated_at
-```
+- `document_id`
+- `title`
+- `path`
+- `source`
+- `category`
+- `subcategory`
+- `updated_at`
 
-Нормализованный формат документов является сознательным решением MVP и представляет собой **наш идеальный документооборот**.
+Нормализованный формат документов является сознательным решением MVP и представляет собой наш идеальный документооборот.
 
 Это не утверждение о том, что реальные корпоративные документы всегда имеют такую структуру.
 
@@ -365,40 +348,38 @@ evaluation/
 
 Текущий dataset:
 
-* **38 evaluation cases**;
-* уникальные идентификаторы `eval-001` — `eval-038`;
-* контролируемое покрытие Knowledge Base;
-* ожидаемые результаты;
-* ожидаемые источники для source-based evaluation.
+- 38 evaluation cases;
+- уникальные идентификаторы `eval-001` — `eval-038`;
+- контролируемое покрытие Knowledge Base;
+- ожидаемые результаты;
+- ожидаемые источники для source-based evaluation.
 
 Категории:
 
-* `relevant` — 14 cases;
-* `cross_category` — 8 cases;
-* `typical_user` — 4 cases;
-* `source_attribution` — 4 cases;
-* `out_of_kb` — 5 cases;
-* `ambiguous` — 3 cases.
+- `relevant` — 14 cases;
+- `cross_category` — 8 cases;
+- `typical_user` — 4 cases;
+- `source_attribution` — 4 cases;
+- `out_of_kb` — 5 cases;
+- `ambiguous` — 3 cases.
 
 Используются следующие метрики:
 
-1. **Behavior Accuracy**
-2. **Expected Source Hit Rate**
-3. **Source Attribution Accuracy**
-4. **Fallback Accuracy**
+1. Behavior Accuracy
+2. Expected Source Hit Rate
+3. Source Attribution Accuracy
+4. Fallback Accuracy
 
 Для метрик, связанных с expected sources, используются 30 cases, содержащих `expected_sources`.
 
 Фактический результат текущего baseline:
 
-```text
-Cases:                         38
-Source cases:                  30
-Behavior Accuracy:             92.1%
-Expected Source Hit Rate:      100.0%
-Source Attribution Accuracy:   93.3%
-Fallback Accuracy:             100.0%
-```
+- Cases: 38
+- Source cases: 30
+- Behavior Accuracy: 92.1%
+- Expected Source Hit Rate: 100.0%
+- Source Attribution Accuracy: 93.3%
+- Fallback Accuracy: 100.0%
 
 Evaluation runner использует существующий production RAG pipeline, а не дублирует его логику.
 
@@ -416,11 +397,11 @@ Evaluation не использует LLM-as-a-Judge или специализи�
 
 ### Retrieval limitations
 
-`eval-017`:
+**eval-017:**
 
 Один из ожидаемых документов не попадает в текущий Top-K при заданных параметрах Retrieval.
 
-`eval-023`:
+**eval-023:**
 
 Один из ожидаемых документов также не попадает в текущий Top-K.
 
@@ -428,7 +409,7 @@ Evaluation не использует LLM-as-a-Judge или специализи�
 
 ### Ambiguous queries
 
-`eval-036`, `eval-037`, `eval-038`:
+**eval-036, eval-037, eval-038:**
 
 Для этих кейсов ожидалось explicit clarification, однако текущий MVP возвращает answer.
 
@@ -436,7 +417,7 @@ Evaluation не использует LLM-as-a-Judge или специализи�
 
 ### Fallback evaluation
 
-`eval-035` первоначально показал необходимость уточнения логики evaluation classifier.
+**eval-035** первоначально показал необходимость уточнения логики evaluation classifier.
 
 Ответ содержал fallback-фразу вместе с пояснением и нерелевантными источниками. Evaluation classifier был скорректирован так, чтобы наличие точной fallback-фразы классифицировалось как fallback.
 
@@ -452,15 +433,15 @@ Evaluation не использует LLM-as-a-Judge или специализи�
 
 В частности, текущие результаты сами по себе не являются основанием для автоматического добавления:
 
-* hybrid search;
-* reranking;
-* query expansion;
-* Agentic RAG;
-* отдельного clarification engine.
+- hybrid search;
+- reranking;
+- query expansion;
+- Agentic RAG;
+- отдельного clarification engine.
 
 Главный критерий:
 
-**Сначала измерить проблему — затем усложнять систему.**
+> **Сначала измерить проблему — затем усложнять систему.**
 
 ---
 
@@ -468,14 +449,12 @@ Evaluation не использует LLM-as-a-Judge или специализи�
 
 Текущее состояние автоматических тестов:
 
-```text
-55 passed
-1 warning
-```
+- 55 passed
+- 1 warning
 
 Команда:
 
-```powershell
+```bash
 pytest -q
 ```
 
@@ -487,9 +466,7 @@ pytest -q
 
 Evaluation-specific tests:
 
-```text
-8 passed
-```
+- 8 passed
 
 Warning относится к внешней зависимости Starlette/AnyIO:
 
@@ -505,23 +482,19 @@ DeprecationWarning
 
 Пример:
 
-```text
-Как оформить отпуск?
-```
+> Как оформить отпуск?
 
 Ожидается:
 
-* релевантный контекст;
-* grounded answer;
-* корректные источники.
+- релевантный контекст;
+- grounded answer;
+- корректные источники.
 
 ### Нерелевантный запрос
 
 Пример:
 
-```text
-Как заказать домик на Марсе?
-```
+> Как заказать домик на Марсе?
 
 При текущем threshold ожидается отсутствие достаточного Retrieval context и срабатывание deterministic fallback без вызова LLM.
 
@@ -529,16 +502,14 @@ DeprecationWarning
 
 Проверены:
 
-* пустой запрос;
-* успешный запрос;
-* отображение результата;
-* обработка недоступного backend.
+- пустой запрос;
+- успешный запрос;
+- отображение результата;
+- обработка недоступного backend.
 
 ---
 
-## 13. Структура проекта
-
-Ключевая структура:
+## 13. Ключевая структура
 
 ```text
 ego-biz-wiki/
@@ -556,8 +527,10 @@ ego-biz-wiki/
 ├── tests/
 ├── ui/
 ├── docs/
+├── .github/
+│   └── workflows/
+│       └── ci.yml
 ├── .env.example
-├── Dockerfile
 ├── README.md
 ├── PROJECT_STATE.md
 └── pyproject.toml
@@ -565,149 +538,224 @@ ego-biz-wiki/
 
 Ключевые подсистемы:
 
-```text
-app/application/indexing/
-app/application/retrieval/
-app/application/rag/
-app/infrastructure/vector_store/
-app/infrastructure/embeddings/
-app/infrastructure/llm/
-app/api/
-ui/
-evaluation/
-```
+- `app/application/indexing/`
+- `app/application/retrieval/`
+- `app/application/rag/`
+- `app/infrastructure/vector_store/`
+- `app/infrastructure/embeddings/`
+- `app/infrastructure/llm/`
+- `app/api/`
+- `ui/`
+- `evaluation/`
+
+Dockerfile в текущей версии проекта отсутствует.
 
 ---
 
 ## 14. История commits
 
-| Commit | Назначение                | Статус    |
-| ------ | ------------------------- | --------- |
-| #01    | Project Foundation        | Completed |
-| #02    | Knowledge Base            | Completed |
-| #03    | Indexing                  | Completed |
-| #04    | Retrieval                 | Completed |
-| #05    | RAG Pipeline              | Completed |
-| #06    | API Search                | Completed |
-| #07    | Streamlit UI              | Completed |
-| #08    | Formal Evaluation Dataset | Completed |
-| #09    | Post-MVP Evaluation       | Completed |
+| Commit | Назначение | Статус |
+|--------|------------|--------|
+| #01 | Project Foundation | Complete |
+| #02 | Knowledge Base | Complete |
+| #03 | Indexing | Complete |
+| #04 | Retrieval | Complete |
+| #05 | RAG Pipeline | Complete |
+| #06 | API Search | Complete |
+| #07 | Streamlit UI | Complete |
+| #08 | Formal Evaluation Dataset | Complete |
+| #09 | Post-MVP Evaluation | Complete |
 
 Основная история разработки соответствует последовательному расширению одного MVP без создания параллельных архитектурных решений.
 
-Документальная синхронизация после Commit #09 не является новым техническим этапом и не получает номер `#10`.
+После Commit #09 был выполнен отдельный технический CI commit:
+
+```text
+dc6d7a6 ci: add GitHub Actions test workflow
+```
+
+Этот commit не является новым numbered functional commit.
+
+Документальная синхронизация после Commit #09 не является новым техническим этапом и не получает номер #10.
 
 ---
 
-## 15. Известные ограничения
+## 15. CI / CD
+
+GitHub Actions CI реализован в:
+
+```text
+.github/workflows/ci.yml
+```
+
+CI запускается:
+
+- при push в `main`;
+- при pull_request в `main`.
+
+Используется matrix для:
+
+- Python 3.12
+- Python 3.13
+
+Основные шаги CI:
+
+1. checkout repository;
+2. setup Python;
+3. установка test dependencies;
+4. запуск `pytest -q`.
+
+Текущий CI workflow успешно проходит.
+
+**CI реализован.**
+
+**CD не реализован.**
+
+Автоматический deployment в текущий MVP не входит.
+
+---
+
+## 16. Известные ограничения
 
 Текущий проект является демонстрационным MVP и не позиционируется как полноценная production enterprise-платформа.
 
 Текущие ограничения:
 
-* контролируемая локальная Knowledge Base;
-* основной документный формат MVP — Markdown;
-* Retrieval основан на vector similarity search;
-* используется фиксированный MVP `top-k`;
-* threshold является baseline;
-* два evaluation cases показывают ограничения текущего Top-K retrieval;
-* ambiguous cases не имеют отдельного clarification behavior;
-* нет hybrid search;
-* нет reranking;
-* нет Agentic RAG;
-* нет external web search;
-* нет long-term conversation memory;
-* нет автоматической стандартизации произвольных форматов документов;
-* evaluation dataset предназначен для MVP-оценки и может расширяться.
+- контролируемая локальная Knowledge Base;
+- основной документный формат MVP — Markdown;
+- Retrieval основан на vector similarity search;
+- используется фиксированный MVP top-k;
+- threshold является baseline;
+- два evaluation cases показывают ограничения текущего Top-K retrieval;
+- ambiguous cases не имеют отдельного clarification behavior;
+- нет hybrid search;
+- нет reranking;
+- нет Agentic RAG;
+- нет external web search;
+- нет long-term conversation memory;
+- нет автоматической стандартизации произвольных форматов документов;
+- evaluation dataset предназначен для MVP-оценки и может расширяться;
+- Docker/containerized deployment не реализован;
+- CD/deployment automation не реализован.
 
 Любое изменение Retrieval должно быть обосновано результатами evaluation, а не только предположением о возможном улучшении.
 
 ---
 
-16. Roadmap
-Ближайшее направление
+## 17. Roadmap
+
+### Ближайшее направление
 
 Анализ результатов формальной оценки и определение того, требуют ли выявленные ограничения изменения текущего MVP baseline.
 
-Возможные дальнейшие направления
-Анализ отдельных Retrieval failures.
-Проверка необходимости изменения top-k и RETRIEVAL_SCORE_THRESHOLD.
-Повторное измерение после обоснованных изменений.
-Улучшение обработки ambiguous queries, если это потребуется для MVP.
-Document Standardization для разнородных форматов:
-PDF;
-DOCX;
-XLSX;
-HTML;
-TXT;
-другие форматы.
+### Возможные дальнейшие направления
+
+- анализ отдельных Retrieval failures;
+- проверка необходимости изменения top-k и `RETRIEVAL_SCORE_THRESHOLD`;
+- повторное измерение после обоснованных изменений;
+- улучшение обработки ambiguous queries, если это потребуется для MVP;
+- Document Standardization для разнородных форматов:
+  - PDF;
+  - DOCX;
+  - XLSX;
+  - HTML;
+  - TXT;
+  - другие форматы;
+- containerized deployment, если он будет обоснован требованиями курса или дальнейшего использования;
+- deployment automation / CD как отдельный будущий этап.
 
 Advanced-подходы не добавляются без подтверждённой необходимости.
 
-17. Следующий технический этап
+---
+
+## 18. Следующий технический этап
 
 Следующий технический этап ещё не выбран автоматически.
 
 После завершения документальной синхронизации необходимо отдельно проанализировать результаты Evaluation и принять решение:
 
-оставить текущий Retrieval baseline без изменений;
-либо выполнить ограниченное, обоснованное улучшение.
+- оставить текущий Retrieval baseline без изменений;
+- либо выполнить ограниченное, обоснованное улучшение.
 
 При принятии решения необходимо руководствоваться главным принципом проекта:
 
-SIMPLE, COMPLETE & WORKING MVP > COMPLEX, UNSTABLE PRODUCT
+> **SIMPLE, COMPLETE & WORKING MVP > COMPLEX, UNSTABLE PRODUCT**
 
 Исторический отчётный этап является отдельной задачей документации и не изменяет техническую нумерацию commits.
 
-18. Git state
+---
 
-Последний нумерованный технический commit:
+## 19. Git state
 
+Последний нумерованный функциональный commit:
+
+```text
 ba6d3ce feat: add post-mvp evaluation
+```
+
+Это **Commit #09 — Post-MVP Evaluation**.
+
+Последний Git commit:
+
+```text
+dc6d7a6 ci: add GitHub Actions test workflow
+```
 
 Текущая ветка:
 
+```text
 main
+```
 
 Remote:
 
+```text
 origin
 https://github.com/egorover/ego-biz-wiki.git
+```
 
-После Commit #09:
+После последнего CI commit:
 
+```text
 HEAD -> main
 origin/main -> main
 working tree clean
+```
 
 Commit #09 содержит:
 
-app/infrastructure/llm/openai.py
-evaluation/run_evaluation.py
-tests/test_evaluation.py
+- `app/infrastructure/llm/openai.py`
+- `evaluation/run_evaluation.py`
+- `tests/test_evaluation.py`
 
-Временные .bak файлы, использовавшиеся во время разработки evaluation, были удалены до commit.
+CI commit содержит:
+
+- `.github/workflows/ci.yml`
+
+Временные `.bak` файлы, использовавшиеся во время разработки evaluation, были удалены до Commit #09.
 
 Текущая документальная синхронизация должна изменить только документацию:
 
-README.md
-PROJECT_STATE.md
-evaluation/README.md
+- `README.md`
+- `PROJECT_STATE.md`
+- `evaluation/README.md`
 
 Эти изменения могут быть зафиксированы отдельным Git commit без порядкового номера.
 
 После документальной синхронизации необходимо проверить:
 
+```bash
 git diff --check
 pytest -q
 git status
 git diff
+```
 
-После успешной проверки документация фиксируется отдельным Git commit и отправляется в origin/main.
+После успешной проверки документация фиксируется отдельным Git commit и отправляется в `origin/main`.
 
 После push необходимо убедиться, что:
 
-HEAD == origin/main
-working tree clean
+- `HEAD == origin/main`
+- working tree clean
 
-После этого техническая история проекта остаётся завершённой на Commit #09.
+После этого техническая история проекта остаётся завершённой на Commit #09, а `dc6d7a6` рассматривается как отдельный CI commit без изменения numbered history.
