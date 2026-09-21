@@ -2,6 +2,12 @@
 
 **AI Business Knowledge Assistant**
 
+[![CI](https://github.com/egorover/ego-biz-wiki/actions/workflows/ci.yml/badge.svg)](https://github.com/egorover/ego-biz-wiki/actions/workflows/ci.yml)
+![Python](https://img.shields.io/badge/Python-3.12%2B-3776AB?logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.141.1-009688?logo=fastapi&logoColor=white)
+![Streamlit](https://img.shields.io/badge/Streamlit-1.64.0-FF4B4B?logo=streamlit&logoColor=white)
+![ChromaDB](https://img.shields.io/badge/ChromaDB-vector%20store-5A67D8)
+
 EgoBiz Wiki — компактный RAG-based AI-ассистент для ответов на вопросы сотрудников на основе контролируемой корпоративной базы знаний.
 
 Проект разработан как выпускной проект курса и представляет собой рабочий MVP для демонстрационной компании **EgoTech Solutions**.
@@ -489,3 +495,4 @@ EgoBiz Wiki создаётся как небольшой, понятный и в
 - достаточной для поставленной задачи.
 
 > **SIMPLE, COMPLETE & WORKING MVP > COMPLEX, UNSTABLE PRODUCT**
+
