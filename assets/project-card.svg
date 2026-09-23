@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">
+  <rect width="1600" height="900" fill="#0B1020"/>
+  <rect x="42" y="42" width="1516" height="816" rx="28" fill="#11182B" stroke="#263451" stroke-width="2"/>
+
+  <text x="90" y="112" fill="#8EA4C7" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="700" letter-spacing="3">PROJECT SNAPSHOT</text>
+
+  <text x="90" y="184" fill="#F5F7FB" font-family="Arial, Helvetica, sans-serif" font-size="64" font-weight="700">EgoBiz Wiki</text>
+  <text x="90" y="226" fill="#9FB2D0" font-family="Arial, Helvetica, sans-serif" font-size="25">AI Business Knowledge Assistant</text>
+
+  <rect x="90" y="270" width="1420" height="104" rx="18" fill="#0D1425" stroke="#263451" stroke-width="2"/>
+  <text x="270" y="314" text-anchor="middle" fill="#DCE7FA" font-family="Arial, Helvetica, sans-serif" font-size="25" font-weight="600">Question</text>
+  <text x="620" y="314" text-anchor="middle" fill="#DCE7FA" font-family="Arial, Helvetica, sans-serif" font-size="25" font-weight="600">Retrieval</text>
+  <text x="970" y="314" text-anchor="middle" fill="#DCE7FA" font-family="Arial, Helvetica, sans-serif" font-size="25" font-weight="600">Context</text>
+  <text x="1320" y="314" text-anchor="middle" fill="#DCE7FA" font-family="Arial, Helvetica, sans-serif" font-size="25" font-weight="600">Answer + Sources</text>
+
+  <line x1="355" y1="348" x2="535" y2="348" stroke="#4DA3FF" stroke-width="3"/>
+  <line x1="705" y1="348" x2="885" y2="348" stroke="#4DA3FF" stroke-width="3"/>
+  <line x1="1055" y1="348" x2="1235" y2="348" stroke="#4DA3FF" stroke-width="3"/>
+
+  <text x="90" y="430" fill="#F5F7FB" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="700">MVP SCALE</text>
+
+  <g font-family="Arial, Helvetica, sans-serif">
+    <text x="90" y="492" fill="#F5F7FB" font-size="48" font-weight="700">23</text>
+    <text x="90" y="524" fill="#8EA4C7" font-size="19">KB documents</text>
+
+    <text x="390" y="492" fill="#F5F7FB" font-size="48" font-weight="700">38</text>
+    <text x="390" y="524" fill="#8EA4C7" font-size="19">evaluation cases</text>
+
+    <text x="700" y="492" fill="#F5F7FB" font-size="48" font-weight="700">55</text>
+    <text x="700" y="524" fill="#8EA4C7" font-size="19">automated tests</text>
+
+    <text x="1010" y="492" fill="#F5F7FB" font-size="48" font-weight="700">23/23</text>
+    <text x="1010" y="524" fill="#8EA4C7" font-size="19">KB coverage</text>
+  </g>
+
+  <line x1="90" y1="570" x2="1510" y2="570" stroke="#263451" stroke-width="2"/>
+
+  <text x="90" y="620" fill="#F5F7FB" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="700">EVALUATION BASELINE</text>
+  <text x="90" y="662" fill="#4DA3FF" font-family="Arial, Helvetica, sans-serif" font-size="32" font-weight="700">92.1%</text>
+  <text x="310" y="662" fill="#8EA4C7" font-family="Arial, Helvetica, sans-serif" font-size="18">Behavior Accuracy</text>
+
+  <text x="620" y="662" fill="#4DA3FF" font-family="Arial, Helvetica, sans-serif" font-size="32" font-weight="700">100.0%</text>
+  <text x="850" y="662" fill="#8EA4C7" font-family="Arial, Helvetica, sans-serif" font-size="18">Expected Source Hit Rate</text>
+
+  <text x="90" y="716" fill="#4DA3FF" font-family="Arial, Helvetica, sans-serif" font-size="32" font-weight="700">93.3%</text>
+  <text x="310" y="716" fill="#8EA4C7" font-family="Arial, Helvetica, sans-serif" font-size="18">Source Attribution Accuracy</text>
+
+  <text x="620" y="716" fill="#4DA3FF" font-family="Arial, Helvetica, sans-serif" font-size="32" font-weight="700">100.0%</text>
+  <text x="850" y="716" fill="#8EA4C7" font-family="Arial, Helvetica, sans-serif" font-size="18">Fallback Accuracy</text>
+
+  <rect x="90" y="770" width="1420" height="52" rx="12" fill="#151F35"/>
+  <text x="110" y="803" text-anchor="start" fill="#9FB2D0" font-family="Arial, Helvetica, sans-serif" font-size="17">Baseline for the current MVP and controlled evaluation dataset.</text>
+
+  <text x="800" y="846" text-anchor="middle" fill="#8EA4C7" font-family="Arial, Helvetica, sans-serif" font-size="19">FastAPI · Streamlit · ChromaDB · OpenAI-compatible API · gpt-4o-mini · text-embedding-3-small</text>
+</svg>
+
+
+
+
